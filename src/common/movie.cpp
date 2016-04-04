@@ -1184,7 +1184,7 @@ void VBAUpdateButtonPressDisplay()
 		{
 			int j	 = KeyOrder[i];
 			int mask = (1 << (j));
-			buffer[strlen(whiteOffset + i] = ((nextKeys & mask) != 0) ? KeyMap[j] : ' ';
+			buffer[whiteOffset + i] = ((nextKeys & mask) != 0) ? KeyMap[j] : ' ';
 		}
 	}
 	systemScreenMessage(buffer, 3, -1);

@@ -39,7 +39,7 @@ libgba_a_SOURCES = \
 	RTC.cpp			\
 	RTC.h			\
 	Sram.cpp		\
-	Sram.h			\
+	Sram.h
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/src		\

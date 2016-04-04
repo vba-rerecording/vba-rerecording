@@ -15,6 +15,7 @@
 #  define socklen_t int
 # endif // ! HAVE_ARPA_INET_H
 # define SOCKET int
+# define INVALID_SOCKET (-1)
 #else // WIN32
 # include "../win32/stdafx.h"
 # include <winsock.h>
@@ -593,7 +594,9 @@ void remoteStubMain()
 			fprintf(stderr, "GDB connection lost\n");
 #ifdef SDL
 			dbgMain	  = debuggerMain;
-			dbgSignal = debuggerSignal;
+//FIXME: This broke due to the SDL build not being executed anymore.
+// Figure out what this was supposed to do and if it is now redundant
+//			dbgSignal = debuggerSignal;
 #endif
 			debugger = false;
 			break;
@@ -646,7 +649,9 @@ void remoteStubMain()
 							remotePutPacket("OK");
 #ifdef SDL
 							dbgMain	  = debuggerMain;
-							dbgSignal = debuggerSignal;
+//FIXME: This broke due to the SDL build not being executed anymore.
+// Figure out what this was supposed to do and if it is now redundant
+//							dbgSignal = debuggerSignal;
 #endif
 							remoteResumed = true;
 							debugger	  = false;
@@ -658,7 +663,9 @@ void remoteStubMain()
 							remotePutPacket("OK");
 #ifdef SDL
 							dbgMain	  = debuggerMain;
-							dbgSignal = debuggerSignal;
+//FIXME: This broke due to the SDL build not being executed anymore.
+// Figure out what this was supposed to do and if it is now redundant
+//							dbgSignal = debuggerSignal;
 #endif
 							debugger  = false;
 							emulating = false;

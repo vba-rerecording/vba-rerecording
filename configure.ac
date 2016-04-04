@@ -1,6 +1,9 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT(src/AutoBuild.h)
+AC_PREREQ([2.69])
+
+AC_INIT([vba-rr],[24.3])
+AC_CONFIG_SRCDIR(src/version.h)
 
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
@@ -16,7 +19,7 @@ case "$target" in
     ;;
 esac
 
-AM_INIT_AUTOMAKE(VisualBoyAdvance, 1.7.2)
+AM_INIT_AUTOMAKE([subdir-objects])
 
 AC_ARG_ENABLE(c-core,
   AC_HELP_STRING([--enable-c-core],[enable C core (default is no on x86 targets)]),
@@ -139,6 +142,7 @@ if test "x$enable_gtk" = xyes; then
   dnl Internationalisation support.
   ALL_LINGUAS="fr"
   AM_GNU_GETTEXT(external)
+  AM_GNU_GETTEXT_VERSION
   AC_CHECK_HEADERS(libintl.h)
   GETTEXT_PACKAGE=vba-1.7.2
   AC_SUBST(GETTEXT_PACKAGE)

@@ -4,7 +4,7 @@
 #include "../common/System.h"
 #include "../Port.h"
 #include "../common/Util.h"
-#include "gb.h"
+#include "GB.h"
 #include "gbGlobals.h"
 
 extern u8 * pix;

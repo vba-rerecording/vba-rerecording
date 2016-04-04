@@ -712,6 +712,7 @@ bool CPUWriteMemState(char *memory, int available)
 bool CPUReadStateFromStream(gzFile gzFile)
 {
 	char tempBackupName[128];
+	bool8 ub = false;
 	if (tempSaveSafe)
 	{
 		sprintf(tempBackupName, "gbatempsave%d.sav", tempSaveID++);
@@ -739,7 +740,7 @@ bool CPUReadStateFromStream(gzFile gzFile)
 		goto failedLoad;
 	}
 
-	bool8 ub = utilReadInt(gzFile) ? true : false;
+	ub = utilReadInt(gzFile) != 0;
 	if (ub != useBios)
 	{
 		if (useBios)

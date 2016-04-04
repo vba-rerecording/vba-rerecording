@@ -5,6 +5,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <cstring>
 #include "zlib.h"
 #include "../Port.h"
 
