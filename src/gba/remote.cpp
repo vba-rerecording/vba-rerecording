@@ -34,6 +34,17 @@
 extern bool debugger;
 extern void CPUUpdateCPSR();
 #ifdef SDL
+#ifndef BKPT_SUPPORT
+//TODO: This disappeared behind a BKPT_SUPPORT guard
+// in GBAGlobals.h
+// However the code using it is only guarded by SDL
+// This defines the extern here without conflicting
+// with the one defined in GBAGlobals if BKPT_SUPPORT
+// is enabled. It could be possible that
+// the actual intention is that the using code
+// should be behind a BKPT_SUPPORT guard instead
+extern void (*dbgSignal)(int, int);
+#endif
 extern void (*dbgMain)();
 extern void debuggerMain();
 extern void debuggerSignal(int, int);
@@ -594,9 +605,7 @@ void remoteStubMain()
 			fprintf(stderr, "GDB connection lost\n");
 #ifdef SDL
 			dbgMain	  = debuggerMain;
-//FIXME: This broke due to the SDL build not being executed anymore.
-// Figure out what this was supposed to do and if it is now redundant
-//			dbgSignal = debuggerSignal;
+			dbgSignal = debuggerSignal;
 #endif
 			debugger = false;
 			break;
@@ -649,9 +658,7 @@ void remoteStubMain()
 							remotePutPacket("OK");
 #ifdef SDL
 							dbgMain	  = debuggerMain;
-//FIXME: This broke due to the SDL build not being executed anymore.
-// Figure out what this was supposed to do and if it is now redundant
-//							dbgSignal = debuggerSignal;
+							dbgSignal = debuggerSignal;
 #endif
 							remoteResumed = true;
 							debugger	  = false;
@@ -663,9 +670,7 @@ void remoteStubMain()
 							remotePutPacket("OK");
 #ifdef SDL
 							dbgMain	  = debuggerMain;
-//FIXME: This broke due to the SDL build not being executed anymore.
-// Figure out what this was supposed to do and if it is now redundant
-//							dbgSignal = debuggerSignal;
+							dbgSignal = debuggerSignal;
 #endif
 							debugger  = false;
 							emulating = false;
