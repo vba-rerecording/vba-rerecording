@@ -75,6 +75,8 @@ extern "C" bool cpu_mmx;
 extern bool8 soundEcho;
 extern bool8 soundLowPass;
 extern bool8 soundReverse;
+// This moved from being in GBAGlobals.h to elf.cpp
+extern bool8 parseDebug;
 extern int Init_2xSaI(u32);
 extern void _2xSaI(u8*,u32,u8*,u8*,u32,int,int);
 extern void _2xSaI32(u8*,u32,u8*,u8*,u32,int,int);
