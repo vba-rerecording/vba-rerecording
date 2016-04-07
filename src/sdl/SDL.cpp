@@ -124,20 +124,24 @@ extern void debuggerOutput(char *, u32);
 extern void CPUUpdateRenderBuffers(bool);
 
 struct EmulatedSystem theEmulator = {
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  false,
-  0
+  NULL, // emuMain
+  NULL, // emuReset
+  NULL, // emuCleanup
+  NULL, // emuReadBattery
+  NULL, // emuWriteBattery
+  NULL, // emuReadBatteryFromStream
+  NULL, // emuWriteBatteryToStream
+  NULL, // emuReadState
+  NULL, // emuWriteState
+  NULL, // emuReadStateFromStream
+  NULL, // emuWriteStateToStream
+  NULL, // emuReadMemState
+  NULL, // emuWriteMemState
+  NULL, // emuWritePNG
+  NULL, // emuWriteBMP
+  NULL, // emuUpdateCPSR
+  false, // emuHasDebugger
+  0 // emuCount
 };
 
 SDL_Surface *surface = NULL;
@@ -1814,12 +1818,12 @@ void sdlPollEvents()
       case SDLK_4:
         if(!(event.key.keysym.mod & MOD_NOALT) &&
            (event.key.keysym.mod & KMOD_ALT)) {
-          char *disableMessages[4] =
+          const char *disableMessages[4] =
             { "autofire A disabled",
               "autofire B disabled",
               "autofire R disabled",
               "autofire L disabled"};
-          char *enableMessages[4] =
+          const char *enableMessages[4] =
             { "autofire A",
               "autofire B",
               "autofire R",
@@ -2615,7 +2619,7 @@ int main(int argc, char **argv)
   }
 
   if(!soundOffFlag)
-    soundInit();
+    systemSoundInit();
 
   autoFrameSkipLastTime = throttleLastTime = systemGetClock();
 
@@ -2683,7 +2687,7 @@ int main(int argc, char **argv)
   emulating = 0;
   fprintf(stderr,"Shutting down\n");
   remoteCleanUp();
-  soundShutdown();
+  systemSoundShutdown();
 
   if(gbRom != NULL || rom != NULL) {
     sdlWriteBattery();
@@ -2868,7 +2872,7 @@ u32 systemGetJoypad(int which, bool sensor)
   u32 res = 0;
 
   //----------------------------//
-  if (VBAMoviePlaying()){
+  if (VBAMovieIsPlaying()){
 	// VBAMovieRead() overwrites currentButtons[i]
 	VBAMovieRead(which, sensor);
 	res = currentButtons[which];
@@ -3212,15 +3216,17 @@ bool systemSoundCanChangeQuality()
   return false;
 }
 
-bool systemSoundSetQuality(int quality)
-{
-	if (systemCartridgeType == 0)
-		soundSetQuality(quality);
-	else
-		gbSoundSetQuality(quality);
-
-	return true;
-}
+// TODO: This appears to be redundant since ea63c2d
+// At least gbSoundSetQuality was removed.
+// bool systemSoundSetQuality(int quality)
+// {
+// 	if (systemCartridgeType == 0)
+// 		soundSetQuality(quality);
+// 	else
+// 		gbSoundSetQuality(quality);
+//
+// 	return true;
+// }
 
 bool systemPauseOnFrame()
 {
