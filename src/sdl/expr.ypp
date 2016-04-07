@@ -1,22 +1,18 @@
 %{
-namespace std {  
-#include <stdio.h>
-#include <memory.h>
-#include <stdlib.h>
-#include <string.h>
-}
 
-using namespace std;
- 
-#include "System.h"
-#include "elf.h"
-#include "exprNode.h" 
+#include <cstdio>
+#include <cstdlib>
+#include "common/System.h"
+#include "gba/elf.h"
+#include "exprNode.h"
 
-extern int yyerror(char *);
-extern int yylex(); 
+extern int yyerror(const char *);
+extern int yylex();
 extern char *yytext;
 
-  
+using namespace std;
+
+
 //#define YYERROR_VERBOSE 1
 //#define YYDEBUG 1
 

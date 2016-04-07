@@ -6,8 +6,8 @@ VisualBoyAdvance_SOURCES = \
 	SDL.cpp			\
 	debugger.cpp		\
 	debugger.h		\
-	expr-lex.cpp		\
-	expr.cpp		\
+	expr-lex.lpp	\
+	expr.ypp		\
 	expr.cpp.h		\
 	exprNode.cpp		\
 	exprNode.h		\
@@ -26,8 +26,8 @@ TestEmu_SOURCES = \
 	TestEmu.cpp		\
 	debugger.cpp		\
 	debugger.h		\
-	expr-lex.cpp		\
-	expr.cpp		\
+	expr-lex.lpp		\
+	expr.ypp		\
 	expr.cpp.h		\
 	exprNode.cpp		\
 	exprNode.h		\
