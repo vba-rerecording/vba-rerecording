@@ -2050,6 +2050,26 @@ void file_run()
   renderedFrames = 0;
   }
 
+  FILE * logFile = NULL;
+
+  void log(const char *defaultMsg, ...)
+  {
+  	char	buffer[2048];
+  	va_list valist;
+
+  	va_start(valist, defaultMsg);
+  	vsprintf(buffer, defaultMsg, valist);
+
+  	if (logFile == NULL)
+  	{
+  		logFile = fopen("trace.log", "w");
+  	}
+
+  	fputs(buffer, logFile);
+
+  	va_end(valist);
+  }
+
 int main(int argc, char **argv)
 {
   fprintf(stderr, "VisualBoyAdvance version %s [SDL]\n", VERSION);

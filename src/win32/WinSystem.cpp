@@ -85,25 +85,6 @@ void winOutput(const char *s, u32 addr)
 	}
 }
 
-#ifdef SDL
-void log(const char *defaultMsg, ...)
-{
-	char	buffer[2048];
-	va_list valist;
-
-	va_start(valist, defaultMsg);
-	vsprintf(buffer, defaultMsg, valist);
-
-	if (out == NULL)
-	{
-		out = fopen("trace.log", "w");
-	}
-
-	fputs(buffer, out);
-
-	va_end(valist);
-}
-#else
 void log(const char *msg, ...)
 {
 	va_list valist;
@@ -121,7 +102,6 @@ void log(const char *msg, ...)
 
 	va_end(valist);
 }
-#endif
 
 ////////////////////////////////////
 
