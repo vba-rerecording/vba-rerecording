@@ -471,7 +471,6 @@ variable_desc saveGameStruct[] = {
     *extCpuNextEvent = *extClockTicks; \
     *extTicks		 = *extClockTicks;
 
-#ifdef BKPT_SUPPORT
 bool8 freezeWorkRAM[0x40000];
 bool8 freezeInternalRAM[0x8000];
 
@@ -511,7 +510,6 @@ void cheatsWriteByte(u8 *address, u8 value)
 	}
 }
 #	endif
-#endif
 
 #ifdef PROFILING
 void cpuProfil(char *buf, int size, u32 lowPC, int scale)

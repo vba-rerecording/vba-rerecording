@@ -778,4 +778,3 @@ void remoteCleanUp()
 	if (remoteCleanUpFnc)
 		remoteCleanUpFnc();
 }
-

@@ -118,33 +118,12 @@ extern void remoteInit();
 extern void remoteCleanUp();
 extern void remoteStubMain();
 extern void remoteStubSignal(int,int);
-extern void remoteOutput(char *, u32);
+extern void remoteOutput(const char *, u32);
 extern void remoteSetProtocol(int);
 extern void remoteSetPort(int);
-extern void debuggerOutput(char *, u32);
+extern void debuggerOutput(const char *, u32);
 
 extern void CPUUpdateRenderBuffers(bool);
-
-struct EmulatedSystem theEmulator = {
-  NULL, // emuMain
-  NULL, // emuReset
-  NULL, // emuCleanup
-  NULL, // emuReadBattery
-  NULL, // emuWriteBattery
-  NULL, // emuReadBatteryFromStream
-  NULL, // emuWriteBatteryToStream
-  NULL, // emuReadState
-  NULL, // emuWriteState
-  NULL, // emuReadStateFromStream
-  NULL, // emuWriteStateToStream
-  NULL, // emuReadMemState
-  NULL, // emuWriteMemState
-  NULL, // emuWritePNG
-  NULL, // emuWriteBMP
-  NULL, // emuUpdateCPSR
-  false, // emuHasDebugger
-  0 // emuCount
-};
 
 SDL_Surface *surface = NULL;
 SDL_Overlay *overlay = NULL;
@@ -166,8 +145,6 @@ int srcHeight = 0;
 int destWidth = 0;
 int destHeight = 0;
 
-int sensorX = 2047;
-int sensorY = 2047;
 bool sensorOn = false;
 
 int filter = 0;
@@ -183,7 +160,6 @@ int useMovie = 0;
 
 int pauseWhenInactive = 0;
 int active = 1;
-int emulating = 0;
 int RGB_LOW_BITS_MASK=0x821;
 u32 systemColorMap32[0x10000];
 u16 systemColorMap16[0x10000];
@@ -210,26 +186,6 @@ static int rewindTimer = 0;
 #define REWIND_SIZE 400000
 
 #define _stricmp strcasecmp
-
-/*bool sdlButtons[4][12] = {
-  { false, false, false, false, false, false,
-    false, false, false, false, false, false },
-  { false, false, false, false, false, false,
-    false, false, false, false, false, false },
-  { false, false, false, false, false, false,
-    false, false, false, false, false, false },
-  { false, false, false, false, false, false,
-    false, false, false, false, false, false }
-};*/
-/*
-	I'm changing the way the SDL GUI handles the button
-	input to match the one in win32, this is needed in
-	order to be compatible with the format required by
-	common/movie.cpp
-	--Felipe
-*/
-
-u16 currentButtons[4] = {0, 0, 0, 0};
 
 bool sdlMotionButtons[4] = { false, false, false, false };
 const int32 INITIAL_SENSOR_VALUE = 2047;
@@ -270,7 +226,7 @@ extern void debuggerSignal(int,int);
 
 void (*dbgMain)() = debuggerMain;
 void (*dbgSignal)(int,int) = debuggerSignal;
-void (*dbgOutput)(char *, u32) = debuggerOutput;
+void (*dbgOutput)(const char *, u32) = debuggerOutput;
 
 int  mouseCounter = 0;
 int autoFire = 0;
@@ -2878,67 +2834,13 @@ bool systemReadJoypads()
   return true;
 }
 
-// Kludge to make Lua call the right function.
-u32 systemGetOriginalJoypad(int which, bool sensor){
-	return systemGetJoypad(which,sensor);
-}
-
-u32 systemGetJoypad(int which, bool sensor)
-{
-    sensorOn = sensor;
-  if(which < 0 || which > 3)
-    which = sdlDefaultJoypad;
-
-  //VBAMovieUpdate(which);
-  //VBAMovieUpdateState();
-  u32 res = 0;
-
-  //----------------------------//
-  if (VBAMovieIsPlaying()){
-	// VBAMovieRead() overwrites currentButtons[i]
-	VBAMovieRead(which, sensor);
-	res = currentButtons[which];
-	return res;
-  }
-  //---------------------------//
-  //Temporary implementation, not sure if it's correct --Felipe
-
-  /*
-  if(sdlButtons[which][KEY_BUTTON_A])
-    res |= BUTTON_MASK_A;
-  if(sdlButtons[which][KEY_BUTTON_B])
-    res |= BUTTON_MASK_B;
-  if(sdlButtons[which][KEY_BUTTON_SELECT])
-    res |= BUTTON_MASK_SELECT;
-  if(sdlButtons[which][KEY_BUTTON_START])
-    res |= BUTTON_MASK_START;
-  if(sdlButtons[which][KEY_RIGHT])
-    res |= BUTTON_MASK_RIGHT;
-  if(sdlButtons[which][KEY_LEFT])
-    res |= BUTTON_MASK_LEFT;
-  if(sdlButtons[which][KEY_UP])
-    res |= BUTTON_MASK_UP;
-  if(sdlButtons[which][KEY_DOWN])
-    res |= BUTTON_MASK_DOWN;
-  if(sdlButtons[which][KEY_BUTTON_R])
-    res |= BUTTON_MASK_R;
-  if(sdlButtons[which][KEY_BUTTON_L])
-    res |= BUTTON_MASK_L;
-  */
-/*
-  // disallow L+R or U+D of being pressed at the same time
-  if((res & 48) == 48)
-    res &= ~16;
-  if((res & 192) == 192)
-    res &= ~128;
-*/
-/*
-  if(sdlbuttons[which][KEY_BUTTON_SPEED])
-    res |= 1024;
-  if(sdlButtons[which][KEY_BUTTON_CAPTURE])
-    res |= 2048;
-*/
-	res = currentButtons[which];
+// If I understand correctly, this function will be called
+// from System.cpp and should return whatever the SDL
+// core currently thinks is the input. systemGetJoypad
+// will then check if a movie is running or LUA
+// is giving input and modify the result accordingly
+u32 systemGetOriginalJoypad(int which, bool sensor) {
+	u32 res = currentButtons[which];
 
   if(autoFire) {
     res &= (~autoFire);
@@ -2946,37 +2848,7 @@ u32 systemGetJoypad(int which, bool sensor)
       res |= autoFire;
     autoFireToggle = !autoFireToggle;
   }
-
-  //if (res) fprintf(stdout,"%x\n",res);
-
   return res;
-}
-
-void systemSetJoypad(int which, u32 buttons)
-{
-  if(which < 0 || which > 3)
-    which = sdlDefaultJoypad;
-/*
-  sdlButtons[which][KEY_BUTTON_A] = (buttons & 1) != 0;
-  sdlButtons[which][KEY_BUTTON_B] = (buttons & 2) != 0;
-  sdlButtons[which][KEY_BUTTON_SELECT] = (buttons & 4) != 0;
-  sdlButtons[which][KEY_BUTTON_START] = (buttons & 8) != 0;
-  sdlButtons[which][KEY_RIGHT] = (buttons & 16) != 0;
-  sdlButtons[which][KEY_LEFT] = (buttons & 32) != 0;
-  sdlButtons[which][KEY_UP] = (buttons & 64) != 0;
-  sdlButtons[which][KEY_DOWN] = (buttons & 128) != 0;
-  sdlButtons[which][KEY_BUTTON_R] = (buttons & 256) != 0;
-  sdlButtons[which][KEY_BUTTON_L] = (buttons & 512) != 0;
-*/
-	currentButtons[which]= buttons & 0x3ff;
-}
-
-void systemClearJoypads()
-{
-	for (int i = 0; i < 4; ++i)
-		currentButtons[i] = 0;
-
-	//lastKeys = 0;
 }
 
 void systemSetTitle(const char *title)
@@ -3148,6 +3020,13 @@ void systemSoundResume()
 
 void systemSoundReset()
 {
+}
+
+// This is required System.cpp
+// TODO: Provide actual implementation or motivate that this
+// is actually correct for the SDL core
+bool systemSoundAppliesDSP() {
+  return false;
 }
 
 u32 systemGetClock()
@@ -3610,14 +3489,6 @@ u16 checksumBIOS()
 
 	return biosCheck;
 }
-
-EmulatedSystemCounters systemCounters = {
-	0,	//framecount
-	0,	//lagcount
-	0,	//extracount
-	true,	//lagged
-	true	//laggedLast
-};
 
 void VBAOnEnteringFrameBoundary()
 {

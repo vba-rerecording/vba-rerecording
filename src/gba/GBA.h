@@ -32,9 +32,14 @@ extern void (*cpuSaveGameFunc)(u32, u8);
 
 extern u8 freezeWorkRAM[0x40000];
 extern u8 freezeInternalRAM[0x8000];
+// FIXME: These are only defined in V8.
+// This means that the interfaces for
+// debugging seem to be incompatible
+#ifndef USE_GBA_CORE_V7
 extern u8 freezeVRAM[0x18000];
 extern u8 freezePRAM[0x400];
 extern u8 freezeOAM[0x400];
+#endif
 
 extern bool CPUReadGSASnapshot(const char *);
 extern bool CPUWriteGSASnapshot(const char *, const char *, const char *, const char *);

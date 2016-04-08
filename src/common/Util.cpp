@@ -46,7 +46,7 @@ static z_off_t (ZEXPORT *utilGzTellFunc)(gzFile) = NULL;
 //Kludge to get it to compile in Linux, GCC cannot convert
 //gzwrite function pointer to the type of utilGzWriteFunc
 //due to void* and const void* differences
-//--Felipe 
+//--Felipe
 int gzWrite(gzFile file, void* buf, unsigned len){
 	return gzwrite(file,buf,len);
 }
@@ -1184,7 +1184,7 @@ gzFile utilGzReopen(int id, const char *mode)
 	return gzdopen(id, mode);
 }
 
-gzFile utilMemGzOpen(char *memory, int available, char *mode)
+gzFile utilMemGzOpen(char *memory, int available, const char *mode)
 {
 	utilGzWriteFunc = memgzwrite;
 	utilGzReadFunc	= memgzread;
@@ -1409,4 +1409,3 @@ u16 utilCalcBIOSFileChecksum(const char *biosFileName, int systemType)
 
 	return biosChecksum;
 }
-

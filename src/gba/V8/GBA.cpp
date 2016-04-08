@@ -77,14 +77,12 @@ int profilingTicksReload = 0;
 static profile_segment *profilSegment = NULL;
 #endif
 
-#ifdef BKPT_SUPPORT
 u8	 freezeWorkRAM[0x40000];
 u8	 freezeInternalRAM[0x8000];
 u8	 freezeVRAM[0x18000];
 u8	 freezePRAM[0x400];
 u8	 freezeOAM[0x400];
 bool debugger_last;
-#endif
 
 int32 lcdTicks = (useBios && !skipBios) ? 1008 : 208;
 u8	  timerOnOffDelay	= 0;

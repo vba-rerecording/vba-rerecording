@@ -103,7 +103,7 @@ AC_DEFINE(socklen_t,int)
 
 AC_C_BIGENDIAN
 
-VBA_LIBS="../gba/libgba.a ../gb/libgb.a ../common/libgbcom.a ../filters/libfilter.a"
+VBA_LIBS="../common/libgbcom.a ../gba/libgba.a ../gb/libgb.a ../filters/libfilter.a"
 
 VBA_SRC_EXTRA="$VBA_SRC_EXTRA lua"
 VBA_LIBS="$VBA_LIBS ../lua/libgblua.a"

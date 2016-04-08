@@ -1,6 +1,7 @@
 #include "SystemGlobals.h"
 
 // FIXME: it must be admitted that the naming schema is a whole mess
+// FIXME: This was initialized (albeit with all zeroes) in SDL.cpp
 EmulatedSystem theEmulator;
 
 EmulatedSystemCounters systemCounters =

@@ -4,6 +4,8 @@ noinst_PROGRAMS = TestEmu
 
 VisualBoyAdvance_SOURCES = \
 	SDL.cpp			\
+	SoundSDL.cpp \
+	SoundSDL.h \
 	debugger.cpp		\
 	debugger.h		\
 	expr-lex.lpp	\

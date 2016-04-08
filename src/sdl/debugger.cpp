@@ -1404,7 +1404,7 @@ void debuggerQuit(int, char **)
   }
 }
 
-void debuggerOutput(char *s, u32 addr)
+void debuggerOutput(const char *s, u32 addr)
 {
   if(s)
     puts(s);

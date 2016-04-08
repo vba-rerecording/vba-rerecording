@@ -110,9 +110,9 @@ PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
 am_TestEmu_OBJECTS = TestEmu.$(OBJEXT) debugger.$(OBJEXT) \
 	expr-lex.$(OBJEXT) expr.$(OBJEXT) exprNode.$(OBJEXT)
 TestEmu_OBJECTS = $(am_TestEmu_OBJECTS)
-am_VisualBoyAdvance_OBJECTS = SDL.$(OBJEXT) debugger.$(OBJEXT) \
-	expr-lex.$(OBJEXT) expr.$(OBJEXT) exprNode.$(OBJEXT) \
-	getopt.$(OBJEXT) getopt1.$(OBJEXT)
+am_VisualBoyAdvance_OBJECTS = SDL.$(OBJEXT) SoundSDL.$(OBJEXT) \
+	debugger.$(OBJEXT) expr-lex.$(OBJEXT) expr.$(OBJEXT) \
+	exprNode.$(OBJEXT) getopt.$(OBJEXT) getopt1.$(OBJEXT)
 VisualBoyAdvance_OBJECTS = $(am_VisualBoyAdvance_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -336,6 +336,8 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 VisualBoyAdvance_SOURCES = \
 	SDL.cpp			\
+	SoundSDL.cpp \
+	SoundSDL.h \
 	debugger.cpp		\
 	debugger.h		\
 	expr-lex.lpp	\
@@ -467,6 +469,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SDL.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SoundSDL.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TestEmu.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/debugger.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/expr-lex.Po@am__quote@
