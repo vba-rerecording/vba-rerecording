@@ -3182,21 +3182,6 @@ void systemUpdateMotionSensor()
   }
 }
 
-void systemResetSensor()
-{
-	sensorX = sensorY = INITIAL_SENSOR_VALUE;
-}
-
-int systemGetSensorX()
-{
-  return sensorX;
-}
-
-int systemGetSensorY()
-{
-  return sensorY;
-}
-
 void systemGbPrint(u8 *data,int pages,int feed,int palette, int contrast)
 {
 }
