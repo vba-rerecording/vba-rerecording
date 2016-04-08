@@ -23,11 +23,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include "AutoBuild.h"
-
 #include "SDL.h"
 #include "debugger.h"
 #include "common/System.h"
+#include "common/SystemGlobals.h"
 #include "common/unzip.h"
 #include "common/Util.h"
 #include "gba/GBA.h"
@@ -50,17 +49,17 @@ extern "C" bool cpu_mmx;
 extern bool8 soundEcho;
 extern bool8 soundLowPass;
 extern bool8 soundReverse;
+// Found in elf.cpp
+extern bool8 parseDebug;
 
 extern void remoteInit();
 extern void remoteCleanUp();
 extern void remoteStubMain();
 extern void remoteStubSignal(int,int);
-extern void remoteOutput(char *, u32);
+extern void remoteOutput(const char *, u32);
 extern void remoteSetProtocol(int);
 extern void remoteSetPort(int);
-extern void debuggerOutput(char *, u32);
-
-struct EmulatedSystem emulator;
+extern void debuggerOutput(const char *, u32);
 
 int systemRedShift = 0;
 int systemBlueShift = 16;
@@ -70,14 +69,11 @@ int systemDebug = 0;
 int systemVerbose = 0;
 int systemSaveUpdateCounter = SYSTEM_SAVE_NOT_UPDATED;
 
-int sensorX = 2047;
-int sensorY = 2047;
 bool sensorOn = false;
 
 int cartridgeType = 3;
 int captureFormat = 0;
 
-int emulating = 0;
 int RGB_LOW_BITS_MASK=0x821;
 int systemFrameSkip = 0;
 u32 systemColorMap32[0x10000];
@@ -111,16 +107,16 @@ extern void debuggerSignal(int,int);
 
 void (*dbgMain)() = debuggerMain;
 void (*dbgSignal)(int,int) = debuggerSignal;
-void (*dbgOutput)(char *, u32) = debuggerOutput;
+void (*dbgOutput)(const char *, u32) = debuggerOutput;
 
 char *sdlGetFilename(char *name)
 {
   static char filebuffer[2048];
 
   int len = strlen(name);
-  
+
   char *p = name + len - 1;
-  
+
   while(true) {
     if(*p == '/' ||
        *p == '\\') {
@@ -132,7 +128,7 @@ char *sdlGetFilename(char *name)
     if(len == 0)
       break;
   }
-  
+
   if(len == 0)
     strcpy(filebuffer, name);
   else
@@ -152,7 +148,7 @@ int main(int argc, char **argv)
   captureDir[0] = 0;
   saveDir[0] = 0;
   batteryDir[0] = 0;
-  
+
   char buffer[1024];
 
   systemFrameSkip = frameSkip = 2;
@@ -180,23 +176,23 @@ int main(int argc, char **argv)
     bool failed = false;
     if(utilIsZipFile(szFile)) {
       unzFile unz = unzOpen(szFile);
-      
+
       if(unz == NULL) {
         systemMessage(0, "Cannot open file %s", szFile);
         exit(-1);
       }
       int r = unzGoToFirstFile(unz);
-      
+
       if(r != UNZ_OK) {
         unzClose(unz);
         systemMessage(0, "Bad ZIP file %s", szFile);
         exit(-1);
       }
-      
+
       bool found = false;
-      
+
       unz_file_info info;
-      
+
       while(true) {
         r = unzGetCurrentFileInfo(unz,
                                   &info,
@@ -206,13 +202,13 @@ int main(int argc, char **argv)
                                   0,
                                   NULL,
                                   0);
-        
+
         if(r != UNZ_OK) {
           unzClose(unz);
           systemMessage(0,"Bad ZIP file %s", szFile);
           exit(-1);
         }
-        
+
         if(utilIsGBImage(buffer)) {
           found = true;
           cartridgeType = 1;
@@ -223,30 +219,30 @@ int main(int argc, char **argv)
           cartridgeType = 0;
           break;
         }
-        
+
         r = unzGoToNextFile(unz);
-        
+
         if(r != UNZ_OK)
           break;
       }
-      
+
       if(!found) {
         unzClose(unz);
         systemMessage(0, "No image found on ZIP file %s", szFile);
         exit(-1);
       }
-      
+
       unzClose(unz);
     }
-    
+
     if(utilIsGBImage(szFile) || cartridgeType == 1) {
       failed = !gbLoadRom(szFile);
       cartridgeType = 1;
-      emulator = GBSystem;
+      theEmulator = GBSystem;
     } else if(utilIsGBAImage(szFile) || cartridgeType == 0) {
       failed = !CPULoadRom(szFile);
       cartridgeType = 0;
-      emulator = GBASystem;
+      theEmulator = GBASystem;
 
       //CPUInit(biosFileName, useBios);
       CPUInit();
@@ -255,14 +251,14 @@ int main(int argc, char **argv)
       systemMessage(0, "Unknown file type %s", szFile);
       exit(-1);
     }
-    
+
     if(failed) {
       systemMessage(0, "Failed to load file %s", szFile);
       exit(-1);
     }
     strcpy(filename, szFile);
     char *p = strrchr(filename, '.');
-    
+
     if(p)
       *p = 0;
   } else {
@@ -278,54 +274,54 @@ int main(int argc, char **argv)
     pix = (u8 *)calloc(1, 4 * 240 * 160);
     ioMem = (u8 *)calloc(1, 0x400);
 
-    emulator = GBASystem;
-    
+    theEmulator = GBASystem;
+
     //CPUInit(biosFileName, useBios);
     CPUInit();
-    CPUReset();    
+    CPUReset();
   }
-  
-  if(debuggerStub) 
+
+  if(debuggerStub)
     remoteInit();
-  
+
   if(cartridgeType == 0) {
   } else if (cartridgeType == 1) {
     if(gbBorderOn) {
       gbBorderLineSkip = 256;
       gbBorderColumnSkip = 48;
       gbBorderRowSkip = 40;
-    } else {      
+    } else {
       gbBorderLineSkip = 160;
       gbBorderColumnSkip = 0;
       gbBorderRowSkip = 0;
-    }      
+    }
   } else {
   }
 
   for(int i = 0; i < 0x10000; i++) {
     systemColorMap32[i] = ((i & 0x1f) << systemRedShift) |
       (((i & 0x3e0) >> 5) << systemGreenShift) |
-      (((i & 0x7c00) >> 10) << systemBlueShift);  
+      (((i & 0x7c00) >> 10) << systemBlueShift);
   }
 
   emulating = 1;
-  soundInit();
-  
+  systemSoundInit();
+
   while(emulating) {
     if(!paused) {
-      if(debugger && emulator.emuHasDebugger)
+      if(debugger && theEmulator.emuHasDebugger)
         dbgMain();
       else
-        emulator.emuMain(emulator.emuCount);
+        theEmulator.emuMain(theEmulator.emuCount);
     }
   }
   emulating = 0;
   fprintf(stderr,"Shutting down\n");
   remoteCleanUp();
-  soundShutdown();
+  systemSoundShutdown();
 
   if(gbRom != NULL || rom != NULL) {
-    emulator.emuCleanUp();
+    theEmulator.emuCleanUp();
   }
 
   return 0;
@@ -335,10 +331,10 @@ void systemMessage(int num, const char *msg, ...)
 {
   char buffer[2048];
   va_list valist;
-  
+
   va_start(valist, msg);
   vsprintf(buffer, msg, valist);
-  
+
   fprintf(stderr, "%s\n", buffer);
   va_end(valist);
 }
@@ -383,13 +379,13 @@ int systemScreenCapture(int a)
     else
       sprintf(buffer, "%s%02d.bmp", filename, a);
 
-    emulator.emuWriteBMP(buffer);
+    theEmulator.emuWriteBMP(buffer);
   } else {
     if(captureDir[0])
       sprintf(buffer, "%s/%s%02d.png", captureDir, sdlGetFilename(filename), a);
     else
       sprintf(buffer, "%s%02d.png", filename, a);
-    emulator.emuWritePNG(buffer);
+    theEmulator.emuWritePNG(buffer);
   }
 
   systemScreenMessage("Screen capture");

@@ -6,7 +6,11 @@
 #include "gba/elf.h"
 #include "exprNode.h"
 
-extern int yyerror(const char *);
+int yyerror(const char *s)
+{
+  return 0;
+}
+
 extern int yylex();
 extern char *yytext;
 
@@ -51,11 +55,6 @@ ident:
 ;
 
 %%
-
-int yyerror(char *s)
-{
-  return 0;
-}
 
 #ifndef SDL
 extern FILE *yyin;

@@ -115,10 +115,11 @@ libgba_a_LIBADD =
 am_libgba_a_OBJECTS = agbprint.$(OBJEXT) armdis.$(OBJEXT) \
 	bios.$(OBJEXT) elf.$(OBJEXT) GBACheats.$(OBJEXT) \
 	EEprom.$(OBJEXT) Flash.$(OBJEXT) GBA.$(OBJEXT) \
-	GBAGfx.$(OBJEXT) GBAGlobals.$(OBJEXT) GBAMemory.$(OBJEXT) \
-	GBASound.$(OBJEXT) Mode0.$(OBJEXT) Mode1.$(OBJEXT) \
-	Mode2.$(OBJEXT) Mode3.$(OBJEXT) Mode4.$(OBJEXT) \
-	Mode5.$(OBJEXT) remote.$(OBJEXT) RTC.$(OBJEXT) Sram.$(OBJEXT)
+	GBA-arm.$(OBJEXT) GBA-thumb.$(OBJEXT) GBAGfx.$(OBJEXT) \
+	GBAGlobals.$(OBJEXT) GBAMemory.$(OBJEXT) GBASound.$(OBJEXT) \
+	Mode0.$(OBJEXT) Mode1.$(OBJEXT) Mode2.$(OBJEXT) \
+	Mode3.$(OBJEXT) Mode4.$(OBJEXT) Mode5.$(OBJEXT) \
+	remote.$(OBJEXT) RTC.$(OBJEXT) Sram.$(OBJEXT)
 libgba_a_OBJECTS = $(am_libgba_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -345,8 +346,8 @@ libgba_a_SOURCES = \
 	Flash.h			\
 	GBA.cpp			\
 	GBA.h			\
-	GBA-arm.h		\
-	GBA-thumb.h	\
+	GBA-arm.cpp		\
+	GBA-thumb.cpp	\
 	GBACpu.h		\
 	GBAGfx.cpp		\
 	GBAGfx.h		\
@@ -424,6 +425,8 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/EEprom.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Flash.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GBA-arm.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GBA-thumb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GBA.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GBACheats.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GBAGfx.Po@am__quote@

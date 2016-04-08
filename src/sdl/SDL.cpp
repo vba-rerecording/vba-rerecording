@@ -23,9 +23,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-// FIXME: What the *** was this supposed to do???
-//#include "AutoBuild.h"
-
 #include "Port.h"
 #include "SDL.h"
 #include "debugger.h"

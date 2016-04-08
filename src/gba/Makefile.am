@@ -18,8 +18,8 @@ libgba_a_SOURCES = \
 	Flash.h			\
 	GBA.cpp			\
 	GBA.h			\
-	GBA-arm.h		\
-	GBA-thumb.h	\
+	GBA-arm.cpp		\
+	GBA-thumb.cpp	\
 	GBACpu.h		\
 	GBAGfx.cpp		\
 	GBAGfx.h		\
