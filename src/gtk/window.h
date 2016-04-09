@@ -35,6 +35,7 @@
 #include <list>
 
 #include "../common/System.h"
+#include "../common/SystemGlobals.h"
 
 #include "configfile.h"
 #include "screenarea.h"

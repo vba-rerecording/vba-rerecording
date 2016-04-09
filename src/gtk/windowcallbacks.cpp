@@ -27,6 +27,7 @@
 
 #include "../gba/GBA.h"
 #include "../gba/GBAGlobals.h"
+#include "../gba/GBAGfx.h"
 #include "../gba/Flash.h"
 #include "../gba/GBASound.h"
 #include "../gb/GB.h"
@@ -275,12 +276,12 @@ void Window::vOnFilePauseToggled(Gtk::CheckMenuItem * _poCMI)
     if (m_bPaused)
     {
       vStopEmu();
-      soundPause();
+      systemSoundPause();
     }
     else
     {
       vStartEmu();
-      soundResume();
+      systemSoundResume();
     }
   }
 }
@@ -289,7 +290,7 @@ void Window::vOnFileReset()
 {
   if (emulating)
   {
-    m_stEmulator.emuReset(true);
+    m_stEmulator.emuReset();
     m_poFilePauseItem->set_active(false);
   }
 }
@@ -374,7 +375,7 @@ void Window::vOnImportBatteryFile()
 
     if (m_stEmulator.emuReadBattery(oDialog.get_filename().c_str()))
     {
-      m_stEmulator.emuReset(false);
+      m_stEmulator.emuReset();
       break;
     }
     else
@@ -617,7 +618,7 @@ void Window::vOnFileClose()
 {
   if (m_eCartridge != CartridgeNone)
   {
-    soundPause();
+    systemSoundPause();
     vStopEmu();
     vSetDefaultTitle();
     vDrawDefaultScreen();
@@ -998,25 +999,25 @@ void Window::vOnSoundStatusToggled(Gtk::CheckMenuItem * _poCMI, int _iSoundStatu
     soundOffFlag = true;
     if (systemSoundOn)
     {
-      soundShutdown();
+      systemSoundShutdown();
     }
     sSoundStatus = "off";
     break;
   case SoundMute:
-    soundDisableChannels(0x30f);
+    systemSoundDisableChannels(0x30f);
     sSoundStatus = "mute";
     break;
   case SoundOn:
     if (soundOffFlag)
     {
       soundOffFlag = false;
-      if (! soundInit())
+      if (! systemSoundInit())
       {
         m_poSoundOffItem->set_active();
         return;
       }
     }
-    soundEnableChannels(0x30f);
+    systemSoundEnableChannels(0x30f);
     sSoundStatus = "on";
     break;
   }
@@ -1049,7 +1050,7 @@ void Window::vOnSoundChannelToggled(Gtk::CheckMenuItem * _poCMI, int _iSoundChan
     iShift += 4;
   }
   int iFlag = 1 << iShift;
-  int iActive = soundGetEnabledChannels() & 0x30f;
+  int iActive = systemSoundGetEnabledChannels() & 0x30f;
   if (_poCMI->get_active())
   {
     iActive |= iFlag;
@@ -1058,8 +1059,8 @@ void Window::vOnSoundChannelToggled(Gtk::CheckMenuItem * _poCMI, int _iSoundChan
   {
     iActive &= ~iFlag;
   }
-  soundEnableChannels(iActive);
-  soundDisableChannels(~iActive & 0x30f);
+  systemSoundEnableChannels(iActive);
+  systemSoundDisableChannels(~iActive & 0x30f);
 
   const char * acsChannels[] =
   {
@@ -1081,14 +1082,7 @@ void Window::vOnSoundQualityToggled(Gtk::CheckMenuItem * _poCMI, int _iSoundQual
   }
 
   m_eSoundQuality = (ESoundQuality)_iSoundQuality;
-  if (m_eCartridge == CartridgeGBA)
-  {
-    soundSetQuality(_iSoundQuality);
-  }
-  else if (m_eCartridge == CartridgeGB)
-  {
-    gbSoundSetQuality(_iSoundQuality);
-  }
+  systemSoundSetQuality(_iSoundQuality);
   m_poSoundConfig->vSetKey("quality", _iSoundQuality);
 }
 
@@ -1255,7 +1249,7 @@ void Window::vOnGDBWait()
   poDialog->set_transient_for(*this);
 
   int iPort = 55555;
-  poSpin->set_value(iPort);  
+  poSpin->set_value(iPort);
 
   bool bOk = false;
   if (poDialog->run() == Gtk::RESPONSE_OK)
@@ -1350,7 +1344,7 @@ void Window::vOnGDBLoadAndWait()
   poDialog->set_transient_for(*this);
 
   int iPort = 55555;
-  poSpin->set_value(iPort);  
+  poSpin->set_value(iPort);
 
   bool bOk = false;
   if (poDialog->run() == Gtk::RESPONSE_OK)
@@ -1450,7 +1444,7 @@ bool Window::on_focus_in_event(GdkEventFocus * _pstEvent)
       && m_poDisplayConfig->oGetKey<bool>("pause_when_inactive"))
   {
     vStartEmu();
-    soundResume();
+    systemSoundResume();
   }
   return false;
 }
@@ -1462,7 +1456,7 @@ bool Window::on_focus_out_event(GdkEventFocus * _pstEvent)
       && m_poDisplayConfig->oGetKey<bool>("pause_when_inactive"))
   {
     vStopEmu();
-    soundPause();
+    systemSoundPause();
   }
   return false;
 }

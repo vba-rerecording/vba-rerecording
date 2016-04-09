@@ -153,6 +153,19 @@ if test "x$enable_gtk" = xyes; then
   if test "x$gtk_version" = x2.0; then
     GTKMM_CPPFLAGS="-DGTKMM20"
   fi
+  # Well the gtkmm libraries starting from version 2.4 (at least)
+  # require C++11. While this is not a problem, I don't feel confident
+  # about changing the standard for the whole build. So I add this
+  # variable
+  GTKMM_STD=""
+  if AX_COMPARE_VERSION([$gtk_version],[ge],[2.4]) then
+    GTKMM_STD="-std=c++11"
+    # To be able to preserve backwards compatibility while
+    # changing the code to work with versions upwards of 2.4
+    # add this preprocessor symbol.
+    GTKMM_CPPFLAGS="$GTKMM_CPPFLAGS -DGTKMM24"
+  fi
+  AC_SUBST(GTKMM_STD)
   AC_SUBST(GTKMM_CPPFLAGS)
   VBA_EXTRA="$VBA_EXTRA po"
   VBA_SRC_EXTRA="$VBA_SRC_EXTRA gtk"

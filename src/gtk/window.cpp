@@ -1476,14 +1476,7 @@ bool Window::bLoadROM(const std::string & _rsFile)
   m_bWasEmulating = false;
   m_uiThrottleDelay = 0;
 
-  if (m_eCartridge == CartridgeGBA)
-  {
-    soundSetQuality(m_eSoundQuality);
-  }
-  else
-  {
-    gbSoundSetQuality(m_eSoundQuality);
-  }
+  systemSoundSetQuality(m_eSoundQuality);
 
   vUpdateGameSlots();
   vHistoryAdd(_rsFile);

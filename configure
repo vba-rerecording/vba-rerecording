@@ -627,6 +627,7 @@ VBA_LIBS
 VBA_SRC_EXTRA
 VBA_EXTRA
 GTKMM_CPPFLAGS
+GTKMM_STD
 GTKMM_LIBS
 GTKMM_CFLAGS
 PKG_CONFIG_LIBDIR
@@ -8123,6 +8124,53 @@ fi
   if test "x$gtk_version" = x2.0; then
     GTKMM_CPPFLAGS="-DGTKMM20"
   fi
+  # Well the gtkmm libraries starting from version 2.4 (at least)
+  # require C++11. While this is not a problem, I don't feel confident
+  # about changing the standard for the whole build. So I add this
+  # variable
+  GTKMM_STD=""
+  if
+
+
+  # Used to indicate true or false condition
+  ax_compare_version=false
+
+  # Convert the two version strings to be compared into a format that
+  # allows a simple string comparison.  The end result is that a version
+  # string of the form 1.12.5-r617 will be converted to the form
+  # 0001001200050617.  In other words, each number is zero padded to four
+  # digits, and non digits are removed.
+
+  ax_compare_version_A=`echo "$gtk_version" | sed -e 's/\([0-9]*\)/Z\1Z/g' \
+                     -e 's/Z\([0-9]\)Z/Z0\1Z/g' \
+                     -e 's/Z\([0-9][0-9]\)Z/Z0\1Z/g' \
+                     -e 's/Z\([0-9][0-9][0-9]\)Z/Z0\1Z/g' \
+                     -e 's/[^0-9]//g'`
+
+
+  ax_compare_version_B=`echo "2.4" | sed -e 's/\([0-9]*\)/Z\1Z/g' \
+                     -e 's/Z\([0-9]\)Z/Z0\1Z/g' \
+                     -e 's/Z\([0-9][0-9]\)Z/Z0\1Z/g' \
+                     -e 's/Z\([0-9][0-9][0-9]\)Z/Z0\1Z/g' \
+                     -e 's/[^0-9]//g'`
+
+
+    ax_compare_version=`echo "x$ax_compare_version_A
+x$ax_compare_version_B" | sed 's/^ *//' | sort -r | sed "s/x${ax_compare_version_A}/true/;s/x${ax_compare_version_B}/false/;1q"`
+
+
+
+    if test "$ax_compare_version" = "true" ; then
+    :
+      fi
+ then
+    GTKMM_STD="-std=c++11"
+    # To be able to preserve backwards compatibility while
+    # changing the code to work with versions upwards of 2.4
+    # add this preprocessor symbol.
+    GTKMM_CPPFLAGS="$GTKMM_CPPFLAGS -DGTKMM24"
+  fi
+
 
   VBA_EXTRA="$VBA_EXTRA po"
   VBA_SRC_EXTRA="$VBA_SRC_EXTRA gtk"

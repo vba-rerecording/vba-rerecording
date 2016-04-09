@@ -25,7 +25,6 @@
 #include <sigc++/connection.h>
 
 #include <sigc++/slot.h>
-#include <sigc++/object.h>
 #include <sigc++/functors/mem_fun.h>
 
 namespace SigC
