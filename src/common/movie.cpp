@@ -1177,24 +1177,26 @@ void VBAUpdateButtonPressDisplay()
 	lastKeys |= theApp.autoHold & BUTTON_REGULAR_RECORDING_MASK;
 	lastKeys |= (theApp.autoFire | theApp.autoFire2) & BUTTON_REGULAR_RECORDING_MASK;
 #else
-	// don't bother color-coding autofire and such
-	if (Movie.state != MOVIE_STATE_NONE)
-	{
+	// FIXME: SDL toggle this with a button/config
+	if(false) {
+		if (Movie.state != MOVIE_STATE_NONE)
+		{
+			for (int i = 0; i < KeyMaxCount; ++i)
+			{
+				int j	 = KeyOrder[i];
+				int mask = (1 << (j));
+				buffer[whiteOffset + i] = ((nextKeys & mask) != 0) ? KeyMap[j] : ' ';
+			}
+		}
+		systemScreenMessage(buffer, 3, -1);
 		for (int i = 0; i < KeyMaxCount; ++i)
 		{
 			int j	 = KeyOrder[i];
 			int mask = (1 << (j));
-			buffer[whiteOffset + i] = ((nextKeys & mask) != 0) ? KeyMap[j] : ' ';
+			buffer[whiteOffset + i] = ((currKeys & mask) != 0) ? KeyMap[j] : ' ';
 		}
+		systemScreenMessage(buffer, 2, -1);
 	}
-	systemScreenMessage(buffer, 3, -1);
-	for (int i = 0; i < KeyMaxCount; ++i)
-	{
-		int j	 = KeyOrder[i];
-		int mask = (1 << (j));
-		buffer[whiteOffset + i] = ((currKeys & mask) != 0) ? KeyMap[j] : ' ';
-	}
-	systemScreenMessage(buffer, 2, -1);
 #endif
 }
 
@@ -1277,14 +1279,10 @@ void VBAUpdateFrameCountDisplay()
 			strcat(frameDisplayString, extraCountDisplayString);
 		}
 	}
-#if (defined(WIN32) && !defined(SDL))
 	else
 	{
 		frameDisplayString[0] = '\0';
 	}
-#else
-	/// SDL FIXME
-#endif
 	systemScreenMessage(frameDisplayString, 1, -1);
 }
 
