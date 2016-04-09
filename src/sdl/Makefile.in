@@ -90,7 +90,6 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 bin_PROGRAMS = VisualBoyAdvance$(EXEEXT)
-noinst_PROGRAMS = TestEmu$(EXEEXT)
 subdir = src/sdl
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/gettext.m4 \
@@ -106,10 +105,7 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
-PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
-am_TestEmu_OBJECTS = TestEmu.$(OBJEXT) debugger.$(OBJEXT) \
-	expr-lex.$(OBJEXT) expr.$(OBJEXT) exprNode.$(OBJEXT)
-TestEmu_OBJECTS = $(am_TestEmu_OBJECTS)
+PROGRAMS = $(bin_PROGRAMS)
 am_VisualBoyAdvance_OBJECTS = SDL.$(OBJEXT) SoundSDL.$(OBJEXT) \
 	debugger.$(OBJEXT) expr-lex.$(OBJEXT) expr.$(OBJEXT) \
 	exprNode.$(OBJEXT) getopt.$(OBJEXT) getopt1.$(OBJEXT)
@@ -168,8 +164,8 @@ AM_V_YACC = $(am__v_YACC_@AM_V@)
 am__v_YACC_ = $(am__v_YACC_@AM_DEFAULT_V@)
 am__v_YACC_0 = @echo "  YACC    " $@;
 am__v_YACC_1 = 
-SOURCES = $(TestEmu_SOURCES) $(VisualBoyAdvance_SOURCES)
-DIST_SOURCES = $(TestEmu_SOURCES) $(VisualBoyAdvance_SOURCES)
+SOURCES = $(VisualBoyAdvance_SOURCES)
+DIST_SOURCES = $(VisualBoyAdvance_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -334,6 +330,8 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+
+# noinst_PROGRAMS = TestEmu
 VisualBoyAdvance_SOURCES = \
 	SDL.cpp			\
 	SoundSDL.cpp \
@@ -354,21 +352,23 @@ VisualBoyAdvance_SOURCES = \
 
 VisualBoyAdvance_LDADD = @VBA_LIBS@ @SDL_LIBS@
 VisualBoyAdvance_DEPENDENCIES = @VBA_LIBS@
-TestEmu_SOURCES = \
-	TestEmu.cpp		\
-	debugger.cpp		\
-	debugger.h		\
-	expr-lex.lpp		\
-	expr.ypp		\
-	expr.cpp.h		\
-	exprNode.cpp		\
-	exprNode.h		\
-	../AutoBuild.h		\
-	../NLS.h		\
-	../Port.h
 
-TestEmu_LDADD = @VBA_LIBS@ @SDL_LIBS@
-TestEmu_DEPENDENCIES = @VBA_LIBS@
+# TestEmu_SOURCES = \
+# 	TestEmu.cpp		\
+# 	debugger.cpp		\
+# 	debugger.h		\
+# 	expr-lex.lpp		\
+# 	expr.ypp		\
+# 	expr.cpp.h		\
+# 	exprNode.cpp		\
+# 	exprNode.h		\
+# 	../AutoBuild.h		\
+# 	../NLS.h		\
+# 	../Port.h
+#
+# TestEmu_LDADD = @VBA_LIBS@ @SDL_LIBS@
+#
+# TestEmu_DEPENDENCIES = @VBA_LIBS@
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/src		\
 	-DSDL				\
@@ -451,13 +451,6 @@ uninstall-binPROGRAMS:
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 
-clean-noinstPROGRAMS:
-	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
-
-TestEmu$(EXEEXT): $(TestEmu_OBJECTS) $(TestEmu_DEPENDENCIES) $(EXTRA_TestEmu_DEPENDENCIES) 
-	@rm -f TestEmu$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(TestEmu_OBJECTS) $(TestEmu_LDADD) $(LIBS)
-
 VisualBoyAdvance$(EXEEXT): $(VisualBoyAdvance_OBJECTS) $(VisualBoyAdvance_DEPENDENCIES) $(EXTRA_VisualBoyAdvance_DEPENDENCIES) 
 	@rm -f VisualBoyAdvance$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(VisualBoyAdvance_OBJECTS) $(VisualBoyAdvance_LDADD) $(LIBS)
@@ -470,7 +463,6 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SDL.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SoundSDL.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TestEmu.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/debugger.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/expr-lex.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/expr.Po@am__quote@
@@ -639,8 +631,7 @@ maintainer-clean-generic:
 	-rm -f expr.cpp
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic clean-noinstPROGRAMS \
-	mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -710,18 +701,18 @@ uninstall-am: uninstall-binPROGRAMS
 .MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-am clean \
-	clean-binPROGRAMS clean-generic clean-noinstPROGRAMS \
-	cscopelist-am ctags ctags-am distclean distclean-compile \
-	distclean-generic distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-binPROGRAMS \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am uninstall-binPROGRAMS
+	clean-binPROGRAMS clean-generic cscopelist-am ctags ctags-am \
+	distclean distclean-compile distclean-generic distclean-tags \
+	distdir dvi dvi-am html html-am info info-am install \
+	install-am install-binPROGRAMS install-data install-data-am \
+	install-dvi install-dvi-am install-exec install-exec-am \
+	install-html install-html-am install-info install-info-am \
+	install-man install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
+	ps ps-am tags tags-am uninstall uninstall-am \
+	uninstall-binPROGRAMS
 
 .PRECIOUS: Makefile
 

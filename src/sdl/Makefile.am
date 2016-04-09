@@ -1,6 +1,6 @@
 bin_PROGRAMS = VisualBoyAdvance
 
-noinst_PROGRAMS = TestEmu
+# noinst_PROGRAMS = TestEmu
 
 VisualBoyAdvance_SOURCES = \
 	SDL.cpp			\
@@ -24,22 +24,22 @@ VisualBoyAdvance_LDADD = @VBA_LIBS@ @SDL_LIBS@
 
 VisualBoyAdvance_DEPENDENCIES = @VBA_LIBS@
 
-TestEmu_SOURCES = \
-	TestEmu.cpp		\
-	debugger.cpp		\
-	debugger.h		\
-	expr-lex.lpp		\
-	expr.ypp		\
-	expr.cpp.h		\
-	exprNode.cpp		\
-	exprNode.h		\
-	../AutoBuild.h		\
-	../NLS.h		\
-	../Port.h
-
-TestEmu_LDADD = @VBA_LIBS@ @SDL_LIBS@
-
-TestEmu_DEPENDENCIES = @VBA_LIBS@
+# TestEmu_SOURCES = \
+# 	TestEmu.cpp		\
+# 	debugger.cpp		\
+# 	debugger.h		\
+# 	expr-lex.lpp		\
+# 	expr.ypp		\
+# 	expr.cpp.h		\
+# 	exprNode.cpp		\
+# 	exprNode.h		\
+# 	../AutoBuild.h		\
+# 	../NLS.h		\
+# 	../Port.h
+#
+# TestEmu_LDADD = @VBA_LIBS@ @SDL_LIBS@
+#
+# TestEmu_DEPENDENCIES = @VBA_LIBS@
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/src		\
