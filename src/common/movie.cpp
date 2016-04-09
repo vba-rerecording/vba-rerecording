@@ -1208,7 +1208,9 @@ void VBAUpdateFrameCountDisplay()
 #if (defined(WIN32) && !defined(SDL))
 	if (theApp.frameCounter)
 #else
-	/// SDL FIXME
+	/// SDL FIXME: For now do not display the framecounter. This is a more reasonable
+	// default, but it should eventually be properly fixed
+	if (false)
 #endif
 	{
 		switch (Movie.state)
@@ -1817,7 +1819,7 @@ void VBAMovieSignalReset()
 
 void VBAMovieResetIfRequested()
 {
-	if (BUTTON_MASK_NEW_RESET & 
+	if (BUTTON_MASK_NEW_RESET &
 		(currentButtons[0] | currentButtons[1] | currentButtons[2] | currentButtons[3]))
 	{
 		theEmulator.emuReset();
@@ -2040,4 +2042,3 @@ bool VBAMovieFixHeader()
 	systemScreenMessage("Movie header fixed");
 	return true;
 }
-
