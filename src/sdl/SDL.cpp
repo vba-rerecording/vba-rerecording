@@ -1392,9 +1392,47 @@ void sdlUpdateKey(int key, bool down)
   for(int j = 0; j < 4; j++) {
     for(i = 0 ; i < 12; i++) {
       if((joypad[j][i] & 0xf000) == 0) {
-        if(key == joypad[j][i])
-          if (down) currentButtons[j] |= 1<<i;
-          else currentButtons[j] ^= 1<<i;
+        if(key == joypad[j][i]) {
+          // Safe default
+          u16 mask = 0;
+          switch(i) {
+            case KEY_BUTTON_A:
+              mask = BUTTON_MASK_A;
+              break;
+            case KEY_BUTTON_B:
+              mask = BUTTON_MASK_B;
+              break;
+            case KEY_UP:
+              mask = BUTTON_MASK_UP;
+              break;
+            case KEY_DOWN:
+              mask = BUTTON_MASK_DOWN;
+              break;
+            case KEY_LEFT:
+              mask = BUTTON_MASK_LEFT;
+              break;
+            case KEY_RIGHT:
+              mask = BUTTON_MASK_RIGHT;
+              break;
+            case KEY_BUTTON_L:
+              mask = BUTTON_MASK_L;
+              break;
+            case KEY_BUTTON_R:
+              mask = BUTTON_MASK_R;
+              break;
+            case KEY_BUTTON_START:
+              mask = BUTTON_MASK_START;
+              break;
+            case KEY_BUTTON_SELECT:
+              mask = BUTTON_MASK_SELECT;
+              break;
+            default:
+              // TODO: Error handling/reporting
+              break;
+          }
+          if (down) currentButtons[j] |= mask;
+          else currentButtons[j] ^= mask;
+        }
       }
     }
   }
