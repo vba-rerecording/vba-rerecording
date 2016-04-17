@@ -19,3 +19,6 @@ libgb_a_SOURCES = \
 	gbSGB.h		\
 	gbSound.cpp	\
 	gbSound.h
+
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/src

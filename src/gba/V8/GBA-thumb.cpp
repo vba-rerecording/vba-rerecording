@@ -1,9 +1,9 @@
 #include <cstdio>
 
-#include "../common/System.h"
-#include "GBA.h"
-#include "GBAGlobals.h"
-#include "GBAinline.h"
+#include "common/System.h"
+#include "gba/GBA.h"
+#include "gba/GBAGlobals.h"
+#include "gba/GBAinline.h"
 #include "GBACpu.h"
 
 #ifdef PROFILING
@@ -2360,4 +2360,3 @@ int thumbExecute()
 
 	return 1;
 }
-

@@ -328,6 +328,9 @@ libprof_a_SOURCES = \
 	prof.cpp	\
 	prof.h
 
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/src
+
 all: all-am
 
 .SUFFIXES:

@@ -20,3 +20,6 @@ libfilter_a_SOURCES = \
 	pixel.cpp		\
 	scanline.cpp		\
 	simple2x.cpp
+
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/src

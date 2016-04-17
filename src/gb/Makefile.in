@@ -344,6 +344,9 @@ libgb_a_SOURCES = \
 	gbSound.cpp	\
 	gbSound.h
 
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/src
+
 all: all-am
 
 .SUFFIXES:

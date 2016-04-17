@@ -31,6 +31,7 @@ gvba_LDADD = libgvba.a @VBA_LIBS@ @GTKMM_LIBS@ @LIBINTL@ @SDL_LIBS@
 gvba_DEPENDENCIES = libgvba.a @VBA_LIBS@
 
 gvba_CPPFLAGS = \
+	-I$(top_srcdir)/src \
 	-DPKGDATADIR=\"$(pkgdatadir)\"			\
 	-DLOCALEDIR=\"$(datadir)/locale\"		\
 	-DGETTEXT_PACKAGE=\"$(GETTEXT_PACKAGE)\"	\

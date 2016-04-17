@@ -345,6 +345,9 @@ libfilter_a_SOURCES = \
 	scanline.cpp		\
 	simple2x.cpp
 
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/src
+
 all: all-am
 
 .SUFFIXES:

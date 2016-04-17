@@ -4,7 +4,7 @@
 #include <cstdlib>
 #include "common/System.h"
 #include "gba/elf.h"
-#include "exprNode.h"
+#include "sdl/exprNode.h"
 
 int yyerror(const char *s)
 {

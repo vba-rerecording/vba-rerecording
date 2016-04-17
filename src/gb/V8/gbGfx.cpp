@@ -1,8 +1,8 @@
 #include <cstring>
 
-#include "../../Port.h"
-#include "gbGlobals.h"
-#include "gbSGB.h"
+#include "Port.h"
+#include "gb/gbGlobals.h"
+#include "gb/gbSGB.h"
 
 using namespace std;
 
@@ -217,7 +217,7 @@ void gbRenderLine()
 			{
 				u16 color = gbColorOption ? gbColorFilter[0x7FFF] : 0x7FFF;
 				if (!gbCgbMode)
-					color = gbColorOption ? 
+					color = gbColorOption ?
 						gbColorFilter[gbPalette[gbBgpLine[i + (gbSpeed ? 5 : 11) + gbSpritesTicks[i] * (gbSpeed ? 2 : 4)] & 3] & 0x7FFF] :
 						gbPalette[gbBgpLine[i + (gbSpeed ? 5 : 11) + gbSpritesTicks[i] * (gbSpeed ? 2 : 4)] & 3] & 0x7FFF;
 				gbLineMix[i]	= color;
@@ -605,4 +605,3 @@ void gbDrawSprites(bool draw)
 		}
 	}
 }
-
