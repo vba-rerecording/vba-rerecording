@@ -1479,10 +1479,7 @@ void gbWriteMemoryWrapped(register u16 address, register u8 value)
 				if (!(value & 0x80))
 				{
 					gbMemory[0xff55] = register_HDMA5 |= 0x80;
-					if (gbLcdModeDelayed == 0)
-					{
-						gbHdmaOn = 0;
-					}
+					gbHdmaOn = 0;
 				}
 			}
 			else
