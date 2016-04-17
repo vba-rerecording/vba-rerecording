@@ -46,6 +46,8 @@
 namespace VBA
 {
 
+static const char * gladeFile = PKGDATADIR "/vba.glade";
+
 class Window : public Gtk::Window
 {
   friend class Gnome::Glade::Xml;

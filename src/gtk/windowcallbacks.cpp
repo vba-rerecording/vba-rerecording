@@ -692,7 +692,7 @@ void Window::vOnThrottleOther(Gtk::CheckMenuItem * _poCMI)
   }
 
   Glib::RefPtr<Xml> poXml;
-  poXml = Xml::create(PKGDATADIR "/vba.glade", "ThrottleDialog");
+  poXml = Xml::create(VBA::gladeFile, "ThrottleDialog");
 
   Gtk::Dialog * poDialog = dynamic_cast<Gtk::Dialog *>(poXml->get_widget("ThrottleDialog"));
   Gtk::SpinButton * poSpin = dynamic_cast<Gtk::SpinButton *>(poXml->get_widget("ThrottleSpin"));
@@ -758,7 +758,7 @@ void Window::vOnLayerToggled(Gtk::CheckMenuItem * _poCMI, int _iLayer)
 void Window::vOnDirectories()
 {
   Glib::RefPtr<Xml> poXml;
-  poXml = Xml::create(PKGDATADIR "/vba.glade", "DirectoriesDialog");
+  poXml = Xml::create(VBA::gladeFile, "DirectoriesDialog");
 
   struct
   {
@@ -1168,7 +1168,7 @@ void Window::vOnDisableMMXToggled(Gtk::CheckMenuItem * _poCMI)
 void Window::vOnJoypadConfigure(int _iJoypad)
 {
   Glib::RefPtr<Xml> poXml;
-  poXml = Xml::create(PKGDATADIR "/vba.glade", "JoypadConfigDialog");
+  poXml = Xml::create(VBA::gladeFile, "JoypadConfigDialog");
 
   JoypadConfigDialog * poDialog = NULL;
   poXml->get_widget_derived<JoypadConfigDialog>("JoypadConfigDialog", poDialog);
@@ -1241,7 +1241,7 @@ void Window::vOnAutofireToggled(Gtk::CheckMenuItem * _poCMI, u32 _uiKeyFlag)
 void Window::vOnGDBWait()
 {
   Glib::RefPtr<Xml> poXml;
-  poXml = Xml::create(PKGDATADIR "/vba.glade", "TcpPortDialog");
+  poXml = Xml::create(VBA::gladeFile, "TcpPortDialog");
 
   Gtk::Dialog * poDialog = dynamic_cast<Gtk::Dialog *>(poXml->get_widget("TcpPortDialog"));
   Gtk::SpinButton * poSpin = dynamic_cast<Gtk::SpinButton *>(poXml->get_widget("TcpPortSpin"));
@@ -1336,7 +1336,7 @@ void Window::vOnGDBLoadAndWait()
   }
 
   Glib::RefPtr<Xml> poXml;
-  poXml = Xml::create(PKGDATADIR "/vba.glade", "TcpPortDialog");
+  poXml = Xml::create(VBA::gladeFile, "TcpPortDialog");
 
   Gtk::Dialog * poDialog = dynamic_cast<Gtk::Dialog *>(poXml->get_widget("TcpPortDialog"));
   Gtk::SpinButton * poSpin = dynamic_cast<Gtk::SpinButton *>(poXml->get_widget("TcpPortSpin"));
@@ -1394,7 +1394,7 @@ void Window::vOnGDBDisconnect()
 void Window::vOnHelpAbout()
 {
   Glib::RefPtr<Xml> poXml;
-  poXml = Xml::create(PKGDATADIR "/vba.glade", "AboutDialog");
+  poXml = Xml::create(VBA::gladeFile, "AboutDialog");
 
   Gtk::Dialog * poDialog = dynamic_cast<Gtk::Dialog *>(poXml->get_widget("AboutDialog"));
   poDialog->set_transient_for(*this);

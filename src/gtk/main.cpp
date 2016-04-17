@@ -141,7 +141,7 @@ int main(int argc, char * argv[])
   Glib::RefPtr<Xml> poXml;
   try
   {
-    poXml = Xml::create(PKGDATADIR "/vba.glade", "MainWindow");
+    poXml = Xml::create(VBA::gladeFile, "MainWindow");
   }
   catch (const Xml::Error & e)
   {
