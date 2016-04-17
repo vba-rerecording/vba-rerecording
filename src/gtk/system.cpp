@@ -53,15 +53,12 @@ char biosFileName[2048];
 char saveDir[2048];
 char batteryDir[2048];
 
-int sensorX = 2047;
-int sensorY = 2047;
 bool sensorOn = false;
 
-int  emulating;
 bool debugger;
 int  RGB_LOW_BITS_MASK;
 
-int cartridgeType = 3;
+int systemCartridgeType = 3;
 int sizeOption = 0;
 int captureFormat = 0;
 int throttle = 0;
@@ -76,23 +73,6 @@ SDL_Joystick **sdlDevices = NULL;
 
 u16 motion[4] = {
   SDLK_KP4, SDLK_KP6, SDLK_KP8, SDLK_KP2
-};
-
-struct EmulatedSystem emulator = {
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  false,
-  0
 };
 
 // Extra vars, only used for the GUI
@@ -124,10 +104,44 @@ void systemMessage(int _iId, const char * _csFormat, ...)
   va_end(args);
 }
 
+void systemSetPause(bool p) {
+  paused = p;
+  // TODO: We probably have to communicate this to somewhere
+}
+
+bool systemIsEmulating()
+{
+	return emulating != 0;
+}
+
+bool systemIsPaused() {
+  return paused;
+}
+
+int systemFramesToSkip() {
+  return systemFrameSkip;
+}
+
 void systemDrawScreen()
 {
   GUI()->vDrawScreen();
   systemRenderedFrames++;
+}
+
+void systemRenderFrame() {
+  systemDrawScreen();
+}
+
+void systemRefreshScreen() {
+  GUI()->vDrawScreen();
+}
+
+bool systemIsRunningGBA () {
+  return false;
+}
+
+int systemGetDefaultJoypad () {
+  return 0;
 }
 
 bool systemReadJoypads()
@@ -135,7 +149,7 @@ bool systemReadJoypads()
   return true;
 }
 
-u32 systemReadJoypad(int,bool)
+u32 systemGetOriginalJoypad(int,bool)
 {
   return GUI()->uiReadJoypad();
 }
@@ -153,7 +167,14 @@ void system10Frames(int _iRate)
   GUI()->vComputeFrameskip(_iRate);
 }
 
-void systemFrame(int)
+// This is required System.cpp
+// TODO: Provide actual implementation or motivate that this
+// is actually correct for the SDL core
+bool systemSoundAppliesDSP() {
+  return false;
+}
+
+void systemFrame()
 {
 }
 
@@ -224,6 +245,14 @@ void systemSoundWriteToBuffer()
     memcpy(&auiSoundBuffer[iSoundLen], soundFinalWave, soundBufferLen);
     iSoundLen += soundBufferLen;
   }
+}
+
+void systemSoundClearBuffer()
+{
+	SDL_mutexP(pstSoundMutex);
+	memset(auiSoundBuffer,0,soundBufferTotalLen);
+	iSoundLen=0;
+	SDL_mutexV(pstSoundMutex);
 }
 
 static void vSoundCallback(void * _pvUserData, u8 * _puiStream, int _iLen)
@@ -334,16 +363,6 @@ void systemUpdateMotionSensor()
 {
 }
 
-int systemGetSensorX()
-{
-  return 0;
-}
-
-int systemGetSensorY()
-{
-  return 0;
-}
-
 void systemGbPrint(u8 * _puiData,
                    int  _iPages,
                    int  _iFeed,
@@ -387,9 +406,9 @@ char *sdlGetFilename(char *name)
   static char filebuffer[2048];
 
   int len = strlen(name);
-  
+
   char *p = name + len - 1;
-  
+
   while(true) {
     if(*p == '/' ||
        *p == '\\') {
@@ -401,7 +420,7 @@ char *sdlGetFilename(char *name)
     if(len == 0)
       break;
   }
-  
+
   if(len == 0)
     strcpy(filebuffer, name);
   else
@@ -421,7 +440,7 @@ bool sdlCheckJoyKey(int key)
     if(button >= SDL_JoystickNumButtons(sdlDevices[dev]))
       return false;
   } else if (what < 0x20) {
-    // joystick axis    
+    // joystick axis
     what >>= 1;
     if(what >= SDL_JoystickNumAxes(sdlDevices[dev]))
       return false;
@@ -467,3 +486,8 @@ u16 checksumBIOS()
 void (*dbgMain)() = debuggerMain;
 void (*dbgSignal)(int, int) = debuggerSignal;
 void (*dbgOutput)(char *, u32) = debuggerOutput;
+
+void log(const char *defaultMsg, ...)
+{
+  // TODO: Implement
+}

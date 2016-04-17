@@ -44,12 +44,12 @@ extern bool debugger;
 extern int RGB_LOW_BITS_MASK;
 extern void (*dbgMain)();
 extern void (*dbgSignal)(int, int);
-extern void (*dbgOutput)(char *, u32);
+extern void (*dbgOutput)(const char *, u32);
 extern void remoteInit();
 extern void remoteCleanUp();
 extern void remoteStubMain();
 extern void remoteStubSignal(int, int);
-extern void remoteOutput(char *, u32);
+extern void remoteOutput(const char *, u32);
 extern void remoteSetProtocol(int);
 extern void remoteSetPort(int);
 
