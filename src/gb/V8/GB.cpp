@@ -652,10 +652,10 @@ static void gbHdmaCopyMemory(u16 dst, u16 src, int count)
 	while (count--)
 	{
 #if 0
-		gbMemoryMap[dst >> 12][dst & 0x0fff] = (((src & 0xe000) == 0x8000) || src >= 0xfe00) ? 
+		gbMemoryMap[dst >> 12][dst & 0x0fff] = (((src & 0xe000) == 0x8000) || src >= 0xfe00) ?
 			0xff : gbMemoryMap[src >> 12][src & 0x0fff];
 #else
-		gbMemoryMap[dst >> 12][dst & 0x0fff] = (((src & 0xe000) == 0x8000) || src >= 0xfe00) ? 
+		gbMemoryMap[dst >> 12][dst & 0x0fff] = (((src & 0xe000) == 0x8000) || src >= 0xfe00) ?
 			0xff : (gbCheatMap[src] ? gbCheatRead(src) : gbMemoryMap[src >> 12][src & 0x0fff]);
 #endif
 		++dst;
@@ -1400,8 +1400,9 @@ void gbWriteMemoryWrapped(register u16 address, register u8 value)
 			gbMemoryMap[0x08] = &gbVram[vramAddress];
 			gbMemoryMap[0x09] = &gbVram[vramAddress + 0x1000];
 
-			gbVramBank	 = value;
-			register_VBK = value;
+			gbVramBank = register_VBK = value;
+
+			gbMemory[0xff4f] = (0xfe | value);
 		}
 		return;
 	}
@@ -1633,7 +1634,8 @@ void gbWriteMemoryWrapped(register u16 address, register u8 value)
 			gbMemoryMap[0x0d] = &gbWram[wramAddress];
 
 			gbWramBank		 = bank;
-			gbMemory[0xff70] = register_SVBK = value;
+			register_SVBK = value;
+			gbMemory[0xff70] = (0xf8 | value);
 			return;
 		}
 		break;
@@ -4287,6 +4289,8 @@ static bool gbReadSaveStateFromStream(gzFile gzFile)
 		utilGzRead(gzFile, gbVram, 0x4000);
 		utilGzRead(gzFile, gbWram, 0x8000);
 
+		// FIXME: Are these register values even correct
+		// Where do they come from?
 		int value = register_SVBK;
 		if (value == 0)
 			value = 1;
