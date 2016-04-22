@@ -1439,7 +1439,7 @@ void sdlUpdateKey(int key, bool down)
               break;
           }
           if (down) currentButtons[j] |= mask;
-          else currentButtons[j] ^= mask;
+          else currentButtons[j] &= ~mask;
         }
       }
     }
@@ -1466,7 +1466,7 @@ void sdlUpdateJoyButton(int which,
 
         if((dev == which) && (b >= 128) && (b == (button+128))) {
           if (pressed) currentButtons[j] |= 1<<i;
-          else currentButtons[j] ^= 1<<i;
+          else currentButtons[j] &= ~(1<<i);
         }
       }
     }
@@ -1514,7 +1514,7 @@ void sdlUpdateJoyHat(int which,
             break;
           }
           if (v) currentButtons[j] |= 1<<i;
-          else currentButtons[j] ^= 1<<i;
+          else currentButtons[j] &= ~(1<<i);
         }
       }
     }
@@ -1564,10 +1564,10 @@ void sdlUpdateJoyAxis(int which,
 	  //I have no idea what this does, is this reimplementation correct? --Felipe
 	  if (value>16384) {
 	  	if (a&1) currentButtons[j] |= 1<<i;
-	  	else currentButtons[j] ^= 1<<i;
+	  	else currentButtons[j] &= ~(1<<i);
 	  }
           else if (value<16384){
-          	if (a&1) currentButtons[j] ^= 1<<i;
+          	if (a&1) currentButtons[j] &= ~(1<<i);
           	else currentButtons[j] |= 1<<i;
           }
         }
