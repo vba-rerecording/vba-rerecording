@@ -164,6 +164,8 @@ u16 systemGbPalette[24];
 void (*filterFunction)(u8*,u32,u8*,u8*,u32,int,int) = NULL;
 void (*ifbFunction)(u8*,u32,int,int) = NULL;
 int ifbType = 0;
+// FIXME: More robust and save sizing solution
+// or some other way to prevent overflows
 char filename[2048];
 char ipsname[2048];
 char biosFileName[2048];
@@ -1877,92 +1879,100 @@ void usage(char *cmd)
   printf("\
 \n\
 Options:\n\
-  -1, --video-1x               1x\n\
-  -2, --video-2x               2x\n\
-  -3, --video-3x               3x\n\
-  -4, --video-4x               4x\n\
-  -F, --fullscreen             Full screen\n\
-  -G, --gdb=PROTOCOL           GNU Remote Stub mode:\n\
-                                tcp      - use TCP at port 55555\n\
-                                tcp:PORT - use TCP at port PORT\n\
-                                pipe     - use pipe transport\n\
-  -N, --no-debug               Don't parse debug information\n\
-  -S, --flash-size=SIZE        Set the Flash size\n\
-      --flash-64k               0 -  64K Flash\n\
-      --flash-128k              1 - 128K Flash\n\
-  -T, --throttle=THROTTLE      Set the desired throttle (5...1000)\n\
-  -Y, --yuv=TYPE               Use YUV overlay for drawing:\n\
-                                0 - YV12\n\
-                                1 - UYVY\n\
-                                2 - YVYU\n\
-                                3 - YUY2\n\
-                                4 - IYUV\n\
-  -b, --bios=BIOS              Use given bios file\n\
-  -c, --config=FILE            Read the given configuration file\n\
-  -d, --debug                  Enter debugger\n\
-  -f, --filter=FILTER          Select filter:\n\
-      --filter-normal            0 - normal mode\n\
-      --filter-tv-mode           1 - TV Mode\n\
-      --filter-2xsai             2 - 2xSaI\n\
-      --filter-super-2xsai       3 - Super 2xSaI\n\
-      --filter-super-eagle       4 - Super Eagle\n\
-      --filter-pixelate          5 - Pixelate\n\
-      --filter-motion-blur       6 - Motion Blur\n\
-      --filter-advmame           7 - AdvanceMAME Scale2x\n\
-      --filter-simple2x          8 - Simple2x\n\
-      --filter-bilinear          9 - Bilinear\n\
-      --filter-bilinear+        10 - Bilinear Plus\n\
-      --filter-scanlines        11 - Scanlines\n\
-      --filter-hq2x             12 - hq2x\n\
-      --filter-lq2x             13 - lq2x\n\
-  -h, --help                   Print this help\n\
-  -i, --ips=PATCH              Apply given IPS patch\n\
-  -P, --profile=[HERTZ]        Enable profiling\n\
-  -s, --frameskip=FRAMESKIP    Set frame skip (0...9)\n\
+  -1, --video-1x                  1x\n\
+  -2, --video-2x                  2x\n\
+  -3, --video-3x                  3x\n\
+  -4, --video-4x                  4x\n\
+  -F, --fullscreen                Full screen\n\
+  -G, --gdb=PROTOCOL              GNU Remote Stub mode:\n\
+                                   tcp      - use TCP at port 55555\n\
+                                   tcp:PORT - use TCP at port PORT\n\
+                                   pipe     - use pipe transport\n\
+  -N, --no-debug                   Don't parse debug information\n\
+  -S, --flash-size=SIZE           Set the Flash size\n\
+      --flash-64k                  0 -  64K Flash\n\
+      --flash-128k                 1 - 128K Flash\n\
+  -T, --throttle=THROTTLE         Set the desired throttle (5...1000)\n\
+  -Y, --yuv=TYPE                  Use YUV overlay for drawing:\n\
+                                   0 - YV12\n\
+                                   1 - UYVY\n\
+                                   2 - YVYU\n\
+                                   3 - YUY2\n\
+                                   4 - IYUV\n\
+  -b, --bios=BIOS                 Use given bios file\n\
+  -c, --config=FILE               Read the given configuration file\n\
+  -d, --debug                     Enter debugger\n\
+  -f, --filter=FILTER             Select filter:\n\
+      --filter-normal               0 - normal mode\n\
+      --filter-tv-mode              1 - TV Mode\n\
+      --filter-2xsai                2 - 2xSaI\n\
+      --filter-super-2xsai          3 - Super 2xSaI\n\
+      --filter-super-eagle          4 - Super Eagle\n\
+      --filter-pixelate             5 - Pixelate\n\
+      --filter-motion-blur          6 - Motion Blur\n\
+      --filter-advmame              7 - AdvanceMAME Scale2x\n\
+      --filter-simple2x             8 - Simple2x\n\
+      --filter-bilinear             9 - Bilinear\n\
+      --filter-bilinear+           10 - Bilinear Plus\n\
+      --filter-scanlines           11 - Scanlines\n\
+      --filter-hq2x                12 - hq2x\n\
+      --filter-lq2x                13 - lq2x\n\
+  -h, --help                      Print this help\n\
+  -i, --ips=PATCH                 Apply given IPS patch\n");
+#ifdef PROFILING
+printf("\
+  -P, --profile=[HERTZ]           Enable profiling\n"
+);
+#endif
+printf("\
+  -s, --frameskip=FRAMESKIP       Set frame skip (0...9)\n\
 ");
   printf("\
-  -t, --save-type=TYPE         Set the available save type\n\
-      --save-auto               0 - Automatic (EEPROM, SRAM, FLASH)\n\
-      --save-eeprom             1 - EEPROM\n\
-      --save-sram               2 - SRAM\n\
-      --save-flash              3 - FLASH\n\
-      --save-sensor             4 - EEPROM+Sensor\n\
-      --save-none               5 - NONE\n\
-  -v, --verbose=VERBOSE        Set verbose logging (trace.log)\n\
-                                  1 - SWI\n\
-                                  2 - Unaligned memory access\n\
-                                  4 - Illegal memory write\n\
-                                  8 - Illegal memory read\n\
-                                 16 - DMA 0\n\
-                                 32 - DMA 1\n\
-                                 64 - DMA 2\n\
-                                128 - DMA 3\n\
-                                256 - Undefined instruction\n\
-                                512 - AGBPrint messages\n\
+  -t, --save-type=TYPE            Set the available save type\n\
+      --save-auto                  0 - Automatic (EEPROM, SRAM, FLASH)\n\
+      --save-eeprom                1 - EEPROM\n\
+      --save-sram                  2 - SRAM\n\
+      --save-flash                 3 - FLASH\n\
+      --save-sensor                4 - EEPROM+Sensor\n\
+      --save-none                  5 - NONE\n\
+  -v, --verbose=VERBOSE           Set verbose logging (trace.log)\n\
+                                     1 - SWI\n\
+                                     2 - Unaligned memory access\n\
+                                     4 - Illegal memory write\n\
+                                     8 - Illegal memory read\n\
+                                    16 - DMA 0\n\
+                                    32 - DMA 1\n\
+                                    64 - DMA 2\n\
+                                   128 - DMA 3\n\
+                                   256 - Undefined instruction\n\
+                                   512 - AGBPrint messages\n\
+\n\
+Movie options (Only the last one will be honored):\n\
+  -r, --recordmovie=filename      Start recording input movie\n\
+  -p, --playmovie=filename        Play input movie non-read-only\n\
+  -w, --watchmovie=filename       Play input movie in read-only mode\n\
+\n\
+LUA options:\n\
+  -l, --lua-script=filename       Load and run the given lua script\n\
 \n\
 Long options only:\n\
-      --agb-print              Enable AGBPrint support\n\
-      --auto-frameskip         Enable auto frameskipping\n\
-      --ifb-none               No interframe blending\n\
-      --ifb-motion-blur        Interframe motion blur\n\
-      --ifb-smart              Smart interframe blending\n\
-      --no-agb-print           Disable AGBPrint support\n\
-      --no-auto-frameskip      Disable auto frameskipping\n\
-      --no-ips                 Do not apply IPS patch\n\
-      --no-mmx                 Disable MMX support\n\
-      --no-pause-when-inactive Don't pause when inactive\n\
-      --no-rtc                 Disable RTC support\n\
-      --no-show-speed          Don't show emulation speed\n\
-      --no-throttle            Disable thrrotle\n\
-      --pause-when-inactive    Pause when inactive\n\
-      --rtc                    Enable RTC support\n\
-      --show-speed-normal      Show emulation speed\n\
-      --show-speed-detailed    Show detailed speed data\n\
-");
-  printf("\
-  -r, --recordmovie=filename   Start recording input movie\n\
-  -p, --playmovie=filename   Play input movie non-read-only\n\
-  -w, --watchmovie=filename   Play input movie in read-only mode\n\
+      --agb-print                 Enable AGBPrint support\n\
+      --auto-frameskip            Enable auto frameskipping\n\
+      --ifb-none                  No interframe blending\n\
+      --ifb-motion-blur           Interframe motion blur\n\
+      --ifb-smart                 Smart interframe blending\n\
+      --no-agb-print              Disable AGBPrint support\n\
+      --no-auto-frameskip         Disable auto frameskipping\n\
+      --no-ips                    Do not apply IPS patch\n\
+      --no-mmx                    Disable MMX support\n\
+      --no-pause-when-inactive    Don't pause when inactive\n\
+      --no-rtc                    Disable RTC support\n\
+      --no-show-speed             Don't show emulation speed\n\
+      --no-throttle               Disable thrrotle\n\
+      --pause-when-inactive       Pause when inactive\n\
+      --rtc                       Enable RTC support\n\
+      --show-speed-normal         Show emulation speed\n\
+      --show-speed-detailed       Show detailed speed data\n\
 ");
 }
 
@@ -2075,6 +2085,8 @@ int main(int argc, char **argv)
   saveDir[0] = 0;
   batteryDir[0] = 0;
   ipsname[0] = 0;
+  char * luaScriptFile = NULL;
+  bool loadLUAScript = false;
 
   int op = -1;
 
@@ -2089,7 +2101,9 @@ int main(int argc, char **argv)
 
   while((op = getopt_long(argc,
                           argv,
-                          "FNT:Y:G:D:b:c:df:hi:p::s:t:v:1234",
+                          // TODO: Verify that this now conforms exactly
+                          // to what sdlOptions expects
+                          "FNT:Y:G:D:b:c:df:hi:P::s:t:v:r:p:w:l:1234",
                           sdlOptions,
                           NULL)) != -1) {
     switch(op) {
@@ -2214,7 +2228,6 @@ int main(int argc, char **argv)
         useMovie = 1;
       break;
     case 'p': // play without read-only (editable)
-      fprintf (stderr, "-p got called!\n");
       if(optarg == NULL) {
         fprintf(stderr, "ERROR: --playMovie ('p') needs movie filename as option\n");
         exit(-1);
@@ -2223,7 +2236,6 @@ int main(int argc, char **argv)
         useMovie = 2;
       break;
     case 'w': // play with read-only
-     fprintf (stderr, "-w got called!\n");
       if(optarg == NULL) {
         fprintf(stderr, "ERROR: --watchMovie ('w') needs movie filename as option\n");
         exit(-1);
@@ -2291,6 +2303,19 @@ int main(int argc, char **argv)
       break;
     case '?':
       sdlPrintUsage = 1;
+      break;
+    case 'l':
+      if(optarg == NULL) {
+        fprintf(stderr, "Missing LUA script file name\n");
+        exit(-1);
+      }
+      luaScriptFile = (char *) malloc(strlen(optarg) + 1);
+      if(luaScriptFile != NULL) {
+        fprintf(stderr, "Failed to allocate memory for lua script file name");
+        exit(-1);
+      }
+      strcpy(luaScriptFile, optarg);
+      loadLUAScript = true;
       break;
     }
   }
@@ -2662,11 +2687,22 @@ int main(int argc, char **argv)
   SDL_WM_SetCaption("VisualBoyAdvance", NULL);
 
   char *moviefile = getenv("AUTODEMO");
-//  fprintf (stderr, "Checking for AUTODEMO...\n");
   if (moviefile)
   {
-//    fprintf (stderr, "I got a filename OMG!\nCalling VBAMovieOpen...\n");
     VBAMovieOpen(moviefile, true);
+  }
+
+  // The LUA engine specifies that the emulator has
+  // to be paused before this method is called
+  // Since the same should presumably hold for
+  // loading movies and reading the battery,
+  // this is probably the right place to load the
+  // script
+  if(loadLUAScript) {
+    if(!VBALoadLuaCode(luaScriptFile)){
+      // FIXME: While this is accurate it is not exactly helpful.
+      fprintf(stderr, "Failed to load and run lua script %s", luaScriptFile);
+    };
   }
 
   while(emulating) {
@@ -2703,6 +2739,9 @@ int main(int argc, char **argv)
 
   emulating = 0;
   fprintf(stderr,"Shutting down\n");
+  if(VBALuaRunning()) {
+    VBALuaStop();
+  }
   remoteCleanUp();
   systemSoundShutdown();
 
