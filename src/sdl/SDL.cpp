@@ -2698,7 +2698,7 @@ int main(int argc, char **argv)
     // Wait for the frame boundary to be hit
     // FIXME: What if for some reason the pause
     // flag is triggered early for some other reason?
-    if(paused && loadLUAScript) {
+    if(loadLUAScript && paused) {
       // Now we can properly load the lua script
       if(!VBALoadLuaCode(luaScriptFile.c_str())){
         // FIXME: While this is accurate it is not exactly helpful.
