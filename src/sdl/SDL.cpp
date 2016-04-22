@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <string>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -45,6 +46,7 @@
 #include "../common/vbalua.h"
 #include "SoundSDL.h"
 
+using std::string;
 
 #define GBC_CAPABLE ((gbRom[0x143] & 0x80) != 0)
 #define SGB_CAPABLE (gbRom[0x146] == 0x03)
@@ -2085,7 +2087,7 @@ int main(int argc, char **argv)
   saveDir[0] = 0;
   batteryDir[0] = 0;
   ipsname[0] = 0;
-  char * luaScriptFile = NULL;
+  string luaScriptFile;
   bool loadLUAScript = false;
 
   int op = -1;
@@ -2309,12 +2311,7 @@ int main(int argc, char **argv)
         fprintf(stderr, "Missing LUA script file name\n");
         exit(-1);
       }
-      luaScriptFile = (char *) malloc(strlen(optarg) + 1);
-      if(luaScriptFile != NULL) {
-        fprintf(stderr, "Failed to allocate memory for lua script file name");
-        exit(-1);
-      }
-      strcpy(luaScriptFile, optarg);
+      luaScriptFile = optarg;
       loadLUAScript = true;
       break;
     }
@@ -2699,7 +2696,7 @@ int main(int argc, char **argv)
   // this is probably the right place to load the
   // script
   if(loadLUAScript) {
-    if(!VBALoadLuaCode(luaScriptFile)){
+    if(!VBALoadLuaCode(luaScriptFile.c_str())){
       // FIXME: While this is accurate it is not exactly helpful.
       fprintf(stderr, "Failed to load and run lua script %s", luaScriptFile);
     };
