@@ -2705,6 +2705,8 @@ int main(int argc, char **argv)
         fprintf(stderr, "Failed to load and run lua script %s", luaScriptFile);
       };
       loadLUAScript = false;
+      // Continue
+      paused = false;
     }
     if(!paused && active) {
       if(debugger && theEmulator.emuHasDebugger)
