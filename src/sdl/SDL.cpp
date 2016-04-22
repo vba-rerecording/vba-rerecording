@@ -2099,6 +2099,17 @@ int main(int argc, char **argv)
 
   parseDebug = true;
 
+  // We have to set the sound quality to one
+  // We only allow 44.1kHz, but the default
+  // in SystemGlobals.cpp is still 2. This
+  // is odd and conflicts with the SDL_SAMPLE_RATE,
+  // so we set the quality to one before reading
+  // the preferences (Which will default to one)
+  // It's not ideal, but this at least ensures
+  // that we do not break other code that relies
+  // on the sound quality defaulting to 2
+  systemSoundSetQuality(1);
+
   sdlReadPreferences();
 
   sdlPrintUsage = 0;
