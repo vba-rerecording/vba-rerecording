@@ -1,8 +1,8 @@
-bin_PROGRAMS = VisualBoyAdvance
+bin_PROGRAMS = vbarr
 
 # noinst_PROGRAMS = TestEmu
 
-VisualBoyAdvance_SOURCES = \
+vbarr_SOURCES = \
 	SDL.cpp			\
 	SoundSDL.cpp \
 	SoundSDL.h \
@@ -20,9 +20,9 @@ VisualBoyAdvance_SOURCES = \
 	../NLS.h		\
 	../Port.h
 
-VisualBoyAdvance_LDADD = @VBA_LIBS@ @SDL_LIBS@
+vbarr_LDADD = @VBA_LIBS@ @SDL_LIBS@
 
-VisualBoyAdvance_DEPENDENCIES = @VBA_LIBS@
+vbarr_DEPENDENCIES = @VBA_LIBS@
 
 # TestEmu_SOURCES = \
 # 	TestEmu.cpp		\

@@ -89,7 +89,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-bin_PROGRAMS = VisualBoyAdvance$(EXEEXT)
+bin_PROGRAMS = vbarr$(EXEEXT)
 subdir = src/sdl
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/gettext.m4 \
@@ -106,10 +106,10 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_VisualBoyAdvance_OBJECTS = SDL.$(OBJEXT) SoundSDL.$(OBJEXT) \
-	debugger.$(OBJEXT) expr-lex.$(OBJEXT) expr.$(OBJEXT) \
-	exprNode.$(OBJEXT) getopt.$(OBJEXT) getopt1.$(OBJEXT)
-VisualBoyAdvance_OBJECTS = $(am_VisualBoyAdvance_OBJECTS)
+am_vbarr_OBJECTS = SDL.$(OBJEXT) SoundSDL.$(OBJEXT) debugger.$(OBJEXT) \
+	expr-lex.$(OBJEXT) expr.$(OBJEXT) exprNode.$(OBJEXT) \
+	getopt.$(OBJEXT) getopt1.$(OBJEXT)
+vbarr_OBJECTS = $(am_vbarr_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -164,8 +164,8 @@ AM_V_YACC = $(am__v_YACC_@AM_V@)
 am__v_YACC_ = $(am__v_YACC_@AM_DEFAULT_V@)
 am__v_YACC_0 = @echo "  YACC    " $@;
 am__v_YACC_1 = 
-SOURCES = $(VisualBoyAdvance_SOURCES)
-DIST_SOURCES = $(VisualBoyAdvance_SOURCES)
+SOURCES = $(vbarr_SOURCES)
+DIST_SOURCES = $(vbarr_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -333,7 +333,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 
 # noinst_PROGRAMS = TestEmu
-VisualBoyAdvance_SOURCES = \
+vbarr_SOURCES = \
 	SDL.cpp			\
 	SoundSDL.cpp \
 	SoundSDL.h \
@@ -351,8 +351,8 @@ VisualBoyAdvance_SOURCES = \
 	../NLS.h		\
 	../Port.h
 
-VisualBoyAdvance_LDADD = @VBA_LIBS@ @SDL_LIBS@
-VisualBoyAdvance_DEPENDENCIES = @VBA_LIBS@
+vbarr_LDADD = @VBA_LIBS@ @SDL_LIBS@
+vbarr_DEPENDENCIES = @VBA_LIBS@
 
 # TestEmu_SOURCES = \
 # 	TestEmu.cpp		\
@@ -452,9 +452,9 @@ uninstall-binPROGRAMS:
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 
-VisualBoyAdvance$(EXEEXT): $(VisualBoyAdvance_OBJECTS) $(VisualBoyAdvance_DEPENDENCIES) $(EXTRA_VisualBoyAdvance_DEPENDENCIES) 
-	@rm -f VisualBoyAdvance$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(VisualBoyAdvance_OBJECTS) $(VisualBoyAdvance_LDADD) $(LIBS)
+vbarr$(EXEEXT): $(vbarr_OBJECTS) $(vbarr_DEPENDENCIES) $(EXTRA_vbarr_DEPENDENCIES) 
+	@rm -f vbarr$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(vbarr_OBJECTS) $(vbarr_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

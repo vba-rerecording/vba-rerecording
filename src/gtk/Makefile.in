@@ -91,7 +91,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-bin_PROGRAMS = gvba$(EXEEXT)
+bin_PROGRAMS = gvbarr$(EXEEXT)
 subdir = src/gtk
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/gettext.m4 \
@@ -114,19 +114,20 @@ AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
-libgvba_a_AR = $(AR) $(ARFLAGS)
-libgvba_a_LIBADD =
-am_libgvba_a_OBJECTS =
-libgvba_a_OBJECTS = $(am_libgvba_a_OBJECTS)
+libgvbarr_a_AR = $(AR) $(ARFLAGS)
+libgvbarr_a_LIBADD =
+am_libgvbarr_a_OBJECTS =
+libgvbarr_a_OBJECTS = $(am_libgvbarr_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(pkgdatadir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_gvba_OBJECTS = gvba-configfile.$(OBJEXT) gvba-filters.$(OBJEXT) \
-	gvba-input.$(OBJEXT) gvba-joypadconfig.$(OBJEXT) \
-	gvba-main.$(OBJEXT) gvba-screenarea.$(OBJEXT) \
-	gvba-system.$(OBJEXT) gvba-tools.$(OBJEXT) \
-	gvba-windowcallbacks.$(OBJEXT) gvba-window.$(OBJEXT)
-gvba_OBJECTS = $(am_gvba_OBJECTS)
-gvba_LINK = $(CXXLD) $(gvba_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+am_gvbarr_OBJECTS = gvbarr-configfile.$(OBJEXT) \
+	gvbarr-filters.$(OBJEXT) gvbarr-input.$(OBJEXT) \
+	gvbarr-joypadconfig.$(OBJEXT) gvbarr-main.$(OBJEXT) \
+	gvbarr-screenarea.$(OBJEXT) gvbarr-system.$(OBJEXT) \
+	gvbarr-tools.$(OBJEXT) gvbarr-windowcallbacks.$(OBJEXT) \
+	gvbarr-window.$(OBJEXT)
+gvbarr_OBJECTS = $(am_gvbarr_OBJECTS)
+gvbarr_LINK = $(CXXLD) $(gvbarr_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -173,8 +174,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(libgvba_a_SOURCES) $(gvba_SOURCES)
-DIST_SOURCES = $(libgvba_a_SOURCES) $(gvba_SOURCES)
+SOURCES = $(libgvbarr_a_SOURCES) $(gvbarr_SOURCES)
+DIST_SOURCES = $(libgvbarr_a_SOURCES) $(gvbarr_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -410,8 +411,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = images
-noinst_LIBRARIES = libgvba.a
-gvba_SOURCES = \
+noinst_LIBRARIES = libgvbarr.a
+gvbarr_SOURCES = \
 	configfile.cpp		\
 	configfile.h		\
 	filters.cpp		\
@@ -433,23 +434,23 @@ gvba_SOURCES = \
 	window.cpp		\
 	window.h
 
-gvba_LDADD = libgvba.a @VBA_LIBS@ @GTKMM_LIBS@ @LIBINTL@ @SDL_LIBS@
-gvba_DEPENDENCIES = libgvba.a @VBA_LIBS@
-gvba_CPPFLAGS = \
+gvbarr_LDADD = libgvba.a @VBA_LIBS@ @GTKMM_LIBS@ @LIBINTL@ @SDL_LIBS@
+gvbarr_DEPENDENCIES = libgvba.a @VBA_LIBS@
+gvbarr_CPPFLAGS = \
 	-I$(top_srcdir)/src \
 	-DPKGDATADIR=\"$(pkgdatadir)\"			\
 	-DLOCALEDIR=\"$(datadir)/locale\"		\
 	-DGETTEXT_PACKAGE=\"$(GETTEXT_PACKAGE)\"	\
 	$(GTKMM_CPPFLAGS)
 
-gvba_CXXFLAGS = @GTKMM_STD@ @GTKMM_CFLAGS@ @SDL_CFLAGS@
-libgvba_a_SOURCES = \
+gvbarr_CXXFLAGS = @GTKMM_STD@ @GTKMM_CFLAGS@ @SDL_CFLAGS@
+libgvbarr_a_SOURCES = \
 	../AutoBuild.h		\
 	../NLS.h		\
 	../Port.h
 
-libgvba_a_CPPFLAGS = -DSDL
-libgvba_a_CXXFLAGS = -fno-exceptions
+libgvbarr_a_CPPFLAGS = -DSDL
+libgvbarr_a_CXXFLAGS = -fno-exceptions
 dist_pkgdata_DATA = vba.glade
 all: all-recursive
 
@@ -488,10 +489,10 @@ $(am__aclocal_m4_deps):
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-libgvba.a: $(libgvba_a_OBJECTS) $(libgvba_a_DEPENDENCIES) $(EXTRA_libgvba_a_DEPENDENCIES) 
-	$(AM_V_at)-rm -f libgvba.a
-	$(AM_V_AR)$(libgvba_a_AR) libgvba.a $(libgvba_a_OBJECTS) $(libgvba_a_LIBADD)
-	$(AM_V_at)$(RANLIB) libgvba.a
+libgvbarr.a: $(libgvbarr_a_OBJECTS) $(libgvbarr_a_DEPENDENCIES) $(EXTRA_libgvbarr_a_DEPENDENCIES) 
+	$(AM_V_at)-rm -f libgvbarr.a
+	$(AM_V_AR)$(libgvbarr_a_AR) libgvbarr.a $(libgvbarr_a_OBJECTS) $(libgvbarr_a_LIBADD)
+	$(AM_V_at)$(RANLIB) libgvbarr.a
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
@@ -535,9 +536,9 @@ uninstall-binPROGRAMS:
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 
-gvba$(EXEEXT): $(gvba_OBJECTS) $(gvba_DEPENDENCIES) $(EXTRA_gvba_DEPENDENCIES) 
-	@rm -f gvba$(EXEEXT)
-	$(AM_V_CXXLD)$(gvba_LINK) $(gvba_OBJECTS) $(gvba_LDADD) $(LIBS)
+gvbarr$(EXEEXT): $(gvbarr_OBJECTS) $(gvbarr_DEPENDENCIES) $(EXTRA_gvbarr_DEPENDENCIES) 
+	@rm -f gvbarr$(EXEEXT)
+	$(AM_V_CXXLD)$(gvbarr_LINK) $(gvbarr_OBJECTS) $(gvbarr_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -545,16 +546,16 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gvba-configfile.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gvba-filters.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gvba-input.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gvba-joypadconfig.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gvba-main.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gvba-screenarea.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gvba-system.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gvba-tools.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gvba-window.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gvba-windowcallbacks.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gvbarr-configfile.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gvbarr-filters.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gvbarr-input.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gvbarr-joypadconfig.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gvbarr-main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gvbarr-screenarea.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gvbarr-system.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gvbarr-tools.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gvbarr-window.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gvbarr-windowcallbacks.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -572,145 +573,145 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-gvba-configfile.o: configfile.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -MT gvba-configfile.o -MD -MP -MF $(DEPDIR)/gvba-configfile.Tpo -c -o gvba-configfile.o `test -f 'configfile.cpp' || echo '$(srcdir)/'`configfile.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvba-configfile.Tpo $(DEPDIR)/gvba-configfile.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='configfile.cpp' object='gvba-configfile.o' libtool=no @AMDEPBACKSLASH@
+gvbarr-configfile.o: configfile.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -MT gvbarr-configfile.o -MD -MP -MF $(DEPDIR)/gvbarr-configfile.Tpo -c -o gvbarr-configfile.o `test -f 'configfile.cpp' || echo '$(srcdir)/'`configfile.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvbarr-configfile.Tpo $(DEPDIR)/gvbarr-configfile.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='configfile.cpp' object='gvbarr-configfile.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -c -o gvba-configfile.o `test -f 'configfile.cpp' || echo '$(srcdir)/'`configfile.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -c -o gvbarr-configfile.o `test -f 'configfile.cpp' || echo '$(srcdir)/'`configfile.cpp
 
-gvba-configfile.obj: configfile.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -MT gvba-configfile.obj -MD -MP -MF $(DEPDIR)/gvba-configfile.Tpo -c -o gvba-configfile.obj `if test -f 'configfile.cpp'; then $(CYGPATH_W) 'configfile.cpp'; else $(CYGPATH_W) '$(srcdir)/configfile.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvba-configfile.Tpo $(DEPDIR)/gvba-configfile.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='configfile.cpp' object='gvba-configfile.obj' libtool=no @AMDEPBACKSLASH@
+gvbarr-configfile.obj: configfile.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -MT gvbarr-configfile.obj -MD -MP -MF $(DEPDIR)/gvbarr-configfile.Tpo -c -o gvbarr-configfile.obj `if test -f 'configfile.cpp'; then $(CYGPATH_W) 'configfile.cpp'; else $(CYGPATH_W) '$(srcdir)/configfile.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvbarr-configfile.Tpo $(DEPDIR)/gvbarr-configfile.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='configfile.cpp' object='gvbarr-configfile.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -c -o gvba-configfile.obj `if test -f 'configfile.cpp'; then $(CYGPATH_W) 'configfile.cpp'; else $(CYGPATH_W) '$(srcdir)/configfile.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -c -o gvbarr-configfile.obj `if test -f 'configfile.cpp'; then $(CYGPATH_W) 'configfile.cpp'; else $(CYGPATH_W) '$(srcdir)/configfile.cpp'; fi`
 
-gvba-filters.o: filters.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -MT gvba-filters.o -MD -MP -MF $(DEPDIR)/gvba-filters.Tpo -c -o gvba-filters.o `test -f 'filters.cpp' || echo '$(srcdir)/'`filters.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvba-filters.Tpo $(DEPDIR)/gvba-filters.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='filters.cpp' object='gvba-filters.o' libtool=no @AMDEPBACKSLASH@
+gvbarr-filters.o: filters.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -MT gvbarr-filters.o -MD -MP -MF $(DEPDIR)/gvbarr-filters.Tpo -c -o gvbarr-filters.o `test -f 'filters.cpp' || echo '$(srcdir)/'`filters.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvbarr-filters.Tpo $(DEPDIR)/gvbarr-filters.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='filters.cpp' object='gvbarr-filters.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -c -o gvba-filters.o `test -f 'filters.cpp' || echo '$(srcdir)/'`filters.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -c -o gvbarr-filters.o `test -f 'filters.cpp' || echo '$(srcdir)/'`filters.cpp
 
-gvba-filters.obj: filters.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -MT gvba-filters.obj -MD -MP -MF $(DEPDIR)/gvba-filters.Tpo -c -o gvba-filters.obj `if test -f 'filters.cpp'; then $(CYGPATH_W) 'filters.cpp'; else $(CYGPATH_W) '$(srcdir)/filters.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvba-filters.Tpo $(DEPDIR)/gvba-filters.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='filters.cpp' object='gvba-filters.obj' libtool=no @AMDEPBACKSLASH@
+gvbarr-filters.obj: filters.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -MT gvbarr-filters.obj -MD -MP -MF $(DEPDIR)/gvbarr-filters.Tpo -c -o gvbarr-filters.obj `if test -f 'filters.cpp'; then $(CYGPATH_W) 'filters.cpp'; else $(CYGPATH_W) '$(srcdir)/filters.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvbarr-filters.Tpo $(DEPDIR)/gvbarr-filters.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='filters.cpp' object='gvbarr-filters.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -c -o gvba-filters.obj `if test -f 'filters.cpp'; then $(CYGPATH_W) 'filters.cpp'; else $(CYGPATH_W) '$(srcdir)/filters.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -c -o gvbarr-filters.obj `if test -f 'filters.cpp'; then $(CYGPATH_W) 'filters.cpp'; else $(CYGPATH_W) '$(srcdir)/filters.cpp'; fi`
 
-gvba-input.o: input.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -MT gvba-input.o -MD -MP -MF $(DEPDIR)/gvba-input.Tpo -c -o gvba-input.o `test -f 'input.cpp' || echo '$(srcdir)/'`input.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvba-input.Tpo $(DEPDIR)/gvba-input.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='input.cpp' object='gvba-input.o' libtool=no @AMDEPBACKSLASH@
+gvbarr-input.o: input.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -MT gvbarr-input.o -MD -MP -MF $(DEPDIR)/gvbarr-input.Tpo -c -o gvbarr-input.o `test -f 'input.cpp' || echo '$(srcdir)/'`input.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvbarr-input.Tpo $(DEPDIR)/gvbarr-input.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='input.cpp' object='gvbarr-input.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -c -o gvba-input.o `test -f 'input.cpp' || echo '$(srcdir)/'`input.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -c -o gvbarr-input.o `test -f 'input.cpp' || echo '$(srcdir)/'`input.cpp
 
-gvba-input.obj: input.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -MT gvba-input.obj -MD -MP -MF $(DEPDIR)/gvba-input.Tpo -c -o gvba-input.obj `if test -f 'input.cpp'; then $(CYGPATH_W) 'input.cpp'; else $(CYGPATH_W) '$(srcdir)/input.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvba-input.Tpo $(DEPDIR)/gvba-input.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='input.cpp' object='gvba-input.obj' libtool=no @AMDEPBACKSLASH@
+gvbarr-input.obj: input.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -MT gvbarr-input.obj -MD -MP -MF $(DEPDIR)/gvbarr-input.Tpo -c -o gvbarr-input.obj `if test -f 'input.cpp'; then $(CYGPATH_W) 'input.cpp'; else $(CYGPATH_W) '$(srcdir)/input.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvbarr-input.Tpo $(DEPDIR)/gvbarr-input.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='input.cpp' object='gvbarr-input.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -c -o gvba-input.obj `if test -f 'input.cpp'; then $(CYGPATH_W) 'input.cpp'; else $(CYGPATH_W) '$(srcdir)/input.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -c -o gvbarr-input.obj `if test -f 'input.cpp'; then $(CYGPATH_W) 'input.cpp'; else $(CYGPATH_W) '$(srcdir)/input.cpp'; fi`
 
-gvba-joypadconfig.o: joypadconfig.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -MT gvba-joypadconfig.o -MD -MP -MF $(DEPDIR)/gvba-joypadconfig.Tpo -c -o gvba-joypadconfig.o `test -f 'joypadconfig.cpp' || echo '$(srcdir)/'`joypadconfig.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvba-joypadconfig.Tpo $(DEPDIR)/gvba-joypadconfig.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='joypadconfig.cpp' object='gvba-joypadconfig.o' libtool=no @AMDEPBACKSLASH@
+gvbarr-joypadconfig.o: joypadconfig.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -MT gvbarr-joypadconfig.o -MD -MP -MF $(DEPDIR)/gvbarr-joypadconfig.Tpo -c -o gvbarr-joypadconfig.o `test -f 'joypadconfig.cpp' || echo '$(srcdir)/'`joypadconfig.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvbarr-joypadconfig.Tpo $(DEPDIR)/gvbarr-joypadconfig.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='joypadconfig.cpp' object='gvbarr-joypadconfig.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -c -o gvba-joypadconfig.o `test -f 'joypadconfig.cpp' || echo '$(srcdir)/'`joypadconfig.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -c -o gvbarr-joypadconfig.o `test -f 'joypadconfig.cpp' || echo '$(srcdir)/'`joypadconfig.cpp
 
-gvba-joypadconfig.obj: joypadconfig.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -MT gvba-joypadconfig.obj -MD -MP -MF $(DEPDIR)/gvba-joypadconfig.Tpo -c -o gvba-joypadconfig.obj `if test -f 'joypadconfig.cpp'; then $(CYGPATH_W) 'joypadconfig.cpp'; else $(CYGPATH_W) '$(srcdir)/joypadconfig.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvba-joypadconfig.Tpo $(DEPDIR)/gvba-joypadconfig.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='joypadconfig.cpp' object='gvba-joypadconfig.obj' libtool=no @AMDEPBACKSLASH@
+gvbarr-joypadconfig.obj: joypadconfig.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -MT gvbarr-joypadconfig.obj -MD -MP -MF $(DEPDIR)/gvbarr-joypadconfig.Tpo -c -o gvbarr-joypadconfig.obj `if test -f 'joypadconfig.cpp'; then $(CYGPATH_W) 'joypadconfig.cpp'; else $(CYGPATH_W) '$(srcdir)/joypadconfig.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvbarr-joypadconfig.Tpo $(DEPDIR)/gvbarr-joypadconfig.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='joypadconfig.cpp' object='gvbarr-joypadconfig.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -c -o gvba-joypadconfig.obj `if test -f 'joypadconfig.cpp'; then $(CYGPATH_W) 'joypadconfig.cpp'; else $(CYGPATH_W) '$(srcdir)/joypadconfig.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -c -o gvbarr-joypadconfig.obj `if test -f 'joypadconfig.cpp'; then $(CYGPATH_W) 'joypadconfig.cpp'; else $(CYGPATH_W) '$(srcdir)/joypadconfig.cpp'; fi`
 
-gvba-main.o: main.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -MT gvba-main.o -MD -MP -MF $(DEPDIR)/gvba-main.Tpo -c -o gvba-main.o `test -f 'main.cpp' || echo '$(srcdir)/'`main.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvba-main.Tpo $(DEPDIR)/gvba-main.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='main.cpp' object='gvba-main.o' libtool=no @AMDEPBACKSLASH@
+gvbarr-main.o: main.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -MT gvbarr-main.o -MD -MP -MF $(DEPDIR)/gvbarr-main.Tpo -c -o gvbarr-main.o `test -f 'main.cpp' || echo '$(srcdir)/'`main.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvbarr-main.Tpo $(DEPDIR)/gvbarr-main.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='main.cpp' object='gvbarr-main.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -c -o gvba-main.o `test -f 'main.cpp' || echo '$(srcdir)/'`main.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -c -o gvbarr-main.o `test -f 'main.cpp' || echo '$(srcdir)/'`main.cpp
 
-gvba-main.obj: main.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -MT gvba-main.obj -MD -MP -MF $(DEPDIR)/gvba-main.Tpo -c -o gvba-main.obj `if test -f 'main.cpp'; then $(CYGPATH_W) 'main.cpp'; else $(CYGPATH_W) '$(srcdir)/main.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvba-main.Tpo $(DEPDIR)/gvba-main.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='main.cpp' object='gvba-main.obj' libtool=no @AMDEPBACKSLASH@
+gvbarr-main.obj: main.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -MT gvbarr-main.obj -MD -MP -MF $(DEPDIR)/gvbarr-main.Tpo -c -o gvbarr-main.obj `if test -f 'main.cpp'; then $(CYGPATH_W) 'main.cpp'; else $(CYGPATH_W) '$(srcdir)/main.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvbarr-main.Tpo $(DEPDIR)/gvbarr-main.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='main.cpp' object='gvbarr-main.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -c -o gvba-main.obj `if test -f 'main.cpp'; then $(CYGPATH_W) 'main.cpp'; else $(CYGPATH_W) '$(srcdir)/main.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -c -o gvbarr-main.obj `if test -f 'main.cpp'; then $(CYGPATH_W) 'main.cpp'; else $(CYGPATH_W) '$(srcdir)/main.cpp'; fi`
 
-gvba-screenarea.o: screenarea.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -MT gvba-screenarea.o -MD -MP -MF $(DEPDIR)/gvba-screenarea.Tpo -c -o gvba-screenarea.o `test -f 'screenarea.cpp' || echo '$(srcdir)/'`screenarea.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvba-screenarea.Tpo $(DEPDIR)/gvba-screenarea.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='screenarea.cpp' object='gvba-screenarea.o' libtool=no @AMDEPBACKSLASH@
+gvbarr-screenarea.o: screenarea.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -MT gvbarr-screenarea.o -MD -MP -MF $(DEPDIR)/gvbarr-screenarea.Tpo -c -o gvbarr-screenarea.o `test -f 'screenarea.cpp' || echo '$(srcdir)/'`screenarea.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvbarr-screenarea.Tpo $(DEPDIR)/gvbarr-screenarea.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='screenarea.cpp' object='gvbarr-screenarea.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -c -o gvba-screenarea.o `test -f 'screenarea.cpp' || echo '$(srcdir)/'`screenarea.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -c -o gvbarr-screenarea.o `test -f 'screenarea.cpp' || echo '$(srcdir)/'`screenarea.cpp
 
-gvba-screenarea.obj: screenarea.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -MT gvba-screenarea.obj -MD -MP -MF $(DEPDIR)/gvba-screenarea.Tpo -c -o gvba-screenarea.obj `if test -f 'screenarea.cpp'; then $(CYGPATH_W) 'screenarea.cpp'; else $(CYGPATH_W) '$(srcdir)/screenarea.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvba-screenarea.Tpo $(DEPDIR)/gvba-screenarea.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='screenarea.cpp' object='gvba-screenarea.obj' libtool=no @AMDEPBACKSLASH@
+gvbarr-screenarea.obj: screenarea.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -MT gvbarr-screenarea.obj -MD -MP -MF $(DEPDIR)/gvbarr-screenarea.Tpo -c -o gvbarr-screenarea.obj `if test -f 'screenarea.cpp'; then $(CYGPATH_W) 'screenarea.cpp'; else $(CYGPATH_W) '$(srcdir)/screenarea.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvbarr-screenarea.Tpo $(DEPDIR)/gvbarr-screenarea.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='screenarea.cpp' object='gvbarr-screenarea.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -c -o gvba-screenarea.obj `if test -f 'screenarea.cpp'; then $(CYGPATH_W) 'screenarea.cpp'; else $(CYGPATH_W) '$(srcdir)/screenarea.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -c -o gvbarr-screenarea.obj `if test -f 'screenarea.cpp'; then $(CYGPATH_W) 'screenarea.cpp'; else $(CYGPATH_W) '$(srcdir)/screenarea.cpp'; fi`
 
-gvba-system.o: system.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -MT gvba-system.o -MD -MP -MF $(DEPDIR)/gvba-system.Tpo -c -o gvba-system.o `test -f 'system.cpp' || echo '$(srcdir)/'`system.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvba-system.Tpo $(DEPDIR)/gvba-system.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='system.cpp' object='gvba-system.o' libtool=no @AMDEPBACKSLASH@
+gvbarr-system.o: system.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -MT gvbarr-system.o -MD -MP -MF $(DEPDIR)/gvbarr-system.Tpo -c -o gvbarr-system.o `test -f 'system.cpp' || echo '$(srcdir)/'`system.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvbarr-system.Tpo $(DEPDIR)/gvbarr-system.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='system.cpp' object='gvbarr-system.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -c -o gvba-system.o `test -f 'system.cpp' || echo '$(srcdir)/'`system.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -c -o gvbarr-system.o `test -f 'system.cpp' || echo '$(srcdir)/'`system.cpp
 
-gvba-system.obj: system.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -MT gvba-system.obj -MD -MP -MF $(DEPDIR)/gvba-system.Tpo -c -o gvba-system.obj `if test -f 'system.cpp'; then $(CYGPATH_W) 'system.cpp'; else $(CYGPATH_W) '$(srcdir)/system.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvba-system.Tpo $(DEPDIR)/gvba-system.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='system.cpp' object='gvba-system.obj' libtool=no @AMDEPBACKSLASH@
+gvbarr-system.obj: system.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -MT gvbarr-system.obj -MD -MP -MF $(DEPDIR)/gvbarr-system.Tpo -c -o gvbarr-system.obj `if test -f 'system.cpp'; then $(CYGPATH_W) 'system.cpp'; else $(CYGPATH_W) '$(srcdir)/system.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvbarr-system.Tpo $(DEPDIR)/gvbarr-system.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='system.cpp' object='gvbarr-system.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -c -o gvba-system.obj `if test -f 'system.cpp'; then $(CYGPATH_W) 'system.cpp'; else $(CYGPATH_W) '$(srcdir)/system.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -c -o gvbarr-system.obj `if test -f 'system.cpp'; then $(CYGPATH_W) 'system.cpp'; else $(CYGPATH_W) '$(srcdir)/system.cpp'; fi`
 
-gvba-tools.o: tools.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -MT gvba-tools.o -MD -MP -MF $(DEPDIR)/gvba-tools.Tpo -c -o gvba-tools.o `test -f 'tools.cpp' || echo '$(srcdir)/'`tools.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvba-tools.Tpo $(DEPDIR)/gvba-tools.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tools.cpp' object='gvba-tools.o' libtool=no @AMDEPBACKSLASH@
+gvbarr-tools.o: tools.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -MT gvbarr-tools.o -MD -MP -MF $(DEPDIR)/gvbarr-tools.Tpo -c -o gvbarr-tools.o `test -f 'tools.cpp' || echo '$(srcdir)/'`tools.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvbarr-tools.Tpo $(DEPDIR)/gvbarr-tools.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tools.cpp' object='gvbarr-tools.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -c -o gvba-tools.o `test -f 'tools.cpp' || echo '$(srcdir)/'`tools.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -c -o gvbarr-tools.o `test -f 'tools.cpp' || echo '$(srcdir)/'`tools.cpp
 
-gvba-tools.obj: tools.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -MT gvba-tools.obj -MD -MP -MF $(DEPDIR)/gvba-tools.Tpo -c -o gvba-tools.obj `if test -f 'tools.cpp'; then $(CYGPATH_W) 'tools.cpp'; else $(CYGPATH_W) '$(srcdir)/tools.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvba-tools.Tpo $(DEPDIR)/gvba-tools.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tools.cpp' object='gvba-tools.obj' libtool=no @AMDEPBACKSLASH@
+gvbarr-tools.obj: tools.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -MT gvbarr-tools.obj -MD -MP -MF $(DEPDIR)/gvbarr-tools.Tpo -c -o gvbarr-tools.obj `if test -f 'tools.cpp'; then $(CYGPATH_W) 'tools.cpp'; else $(CYGPATH_W) '$(srcdir)/tools.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvbarr-tools.Tpo $(DEPDIR)/gvbarr-tools.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='tools.cpp' object='gvbarr-tools.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -c -o gvba-tools.obj `if test -f 'tools.cpp'; then $(CYGPATH_W) 'tools.cpp'; else $(CYGPATH_W) '$(srcdir)/tools.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -c -o gvbarr-tools.obj `if test -f 'tools.cpp'; then $(CYGPATH_W) 'tools.cpp'; else $(CYGPATH_W) '$(srcdir)/tools.cpp'; fi`
 
-gvba-windowcallbacks.o: windowcallbacks.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -MT gvba-windowcallbacks.o -MD -MP -MF $(DEPDIR)/gvba-windowcallbacks.Tpo -c -o gvba-windowcallbacks.o `test -f 'windowcallbacks.cpp' || echo '$(srcdir)/'`windowcallbacks.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvba-windowcallbacks.Tpo $(DEPDIR)/gvba-windowcallbacks.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='windowcallbacks.cpp' object='gvba-windowcallbacks.o' libtool=no @AMDEPBACKSLASH@
+gvbarr-windowcallbacks.o: windowcallbacks.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -MT gvbarr-windowcallbacks.o -MD -MP -MF $(DEPDIR)/gvbarr-windowcallbacks.Tpo -c -o gvbarr-windowcallbacks.o `test -f 'windowcallbacks.cpp' || echo '$(srcdir)/'`windowcallbacks.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvbarr-windowcallbacks.Tpo $(DEPDIR)/gvbarr-windowcallbacks.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='windowcallbacks.cpp' object='gvbarr-windowcallbacks.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -c -o gvba-windowcallbacks.o `test -f 'windowcallbacks.cpp' || echo '$(srcdir)/'`windowcallbacks.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -c -o gvbarr-windowcallbacks.o `test -f 'windowcallbacks.cpp' || echo '$(srcdir)/'`windowcallbacks.cpp
 
-gvba-windowcallbacks.obj: windowcallbacks.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -MT gvba-windowcallbacks.obj -MD -MP -MF $(DEPDIR)/gvba-windowcallbacks.Tpo -c -o gvba-windowcallbacks.obj `if test -f 'windowcallbacks.cpp'; then $(CYGPATH_W) 'windowcallbacks.cpp'; else $(CYGPATH_W) '$(srcdir)/windowcallbacks.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvba-windowcallbacks.Tpo $(DEPDIR)/gvba-windowcallbacks.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='windowcallbacks.cpp' object='gvba-windowcallbacks.obj' libtool=no @AMDEPBACKSLASH@
+gvbarr-windowcallbacks.obj: windowcallbacks.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -MT gvbarr-windowcallbacks.obj -MD -MP -MF $(DEPDIR)/gvbarr-windowcallbacks.Tpo -c -o gvbarr-windowcallbacks.obj `if test -f 'windowcallbacks.cpp'; then $(CYGPATH_W) 'windowcallbacks.cpp'; else $(CYGPATH_W) '$(srcdir)/windowcallbacks.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvbarr-windowcallbacks.Tpo $(DEPDIR)/gvbarr-windowcallbacks.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='windowcallbacks.cpp' object='gvbarr-windowcallbacks.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -c -o gvba-windowcallbacks.obj `if test -f 'windowcallbacks.cpp'; then $(CYGPATH_W) 'windowcallbacks.cpp'; else $(CYGPATH_W) '$(srcdir)/windowcallbacks.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -c -o gvbarr-windowcallbacks.obj `if test -f 'windowcallbacks.cpp'; then $(CYGPATH_W) 'windowcallbacks.cpp'; else $(CYGPATH_W) '$(srcdir)/windowcallbacks.cpp'; fi`
 
-gvba-window.o: window.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -MT gvba-window.o -MD -MP -MF $(DEPDIR)/gvba-window.Tpo -c -o gvba-window.o `test -f 'window.cpp' || echo '$(srcdir)/'`window.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvba-window.Tpo $(DEPDIR)/gvba-window.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='window.cpp' object='gvba-window.o' libtool=no @AMDEPBACKSLASH@
+gvbarr-window.o: window.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -MT gvbarr-window.o -MD -MP -MF $(DEPDIR)/gvbarr-window.Tpo -c -o gvbarr-window.o `test -f 'window.cpp' || echo '$(srcdir)/'`window.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvbarr-window.Tpo $(DEPDIR)/gvbarr-window.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='window.cpp' object='gvbarr-window.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -c -o gvba-window.o `test -f 'window.cpp' || echo '$(srcdir)/'`window.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -c -o gvbarr-window.o `test -f 'window.cpp' || echo '$(srcdir)/'`window.cpp
 
-gvba-window.obj: window.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -MT gvba-window.obj -MD -MP -MF $(DEPDIR)/gvba-window.Tpo -c -o gvba-window.obj `if test -f 'window.cpp'; then $(CYGPATH_W) 'window.cpp'; else $(CYGPATH_W) '$(srcdir)/window.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvba-window.Tpo $(DEPDIR)/gvba-window.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='window.cpp' object='gvba-window.obj' libtool=no @AMDEPBACKSLASH@
+gvbarr-window.obj: window.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -MT gvbarr-window.obj -MD -MP -MF $(DEPDIR)/gvbarr-window.Tpo -c -o gvbarr-window.obj `if test -f 'window.cpp'; then $(CYGPATH_W) 'window.cpp'; else $(CYGPATH_W) '$(srcdir)/window.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/gvbarr-window.Tpo $(DEPDIR)/gvbarr-window.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='window.cpp' object='gvbarr-window.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvba_CPPFLAGS) $(CPPFLAGS) $(gvba_CXXFLAGS) $(CXXFLAGS) -c -o gvba-window.obj `if test -f 'window.cpp'; then $(CYGPATH_W) 'window.cpp'; else $(CYGPATH_W) '$(srcdir)/window.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(gvbarr_CPPFLAGS) $(CPPFLAGS) $(gvbarr_CXXFLAGS) $(CXXFLAGS) -c -o gvbarr-window.obj `if test -f 'window.cpp'; then $(CYGPATH_W) 'window.cpp'; else $(CYGPATH_W) '$(srcdir)/window.cpp'; fi`
 install-dist_pkgdataDATA: $(dist_pkgdata_DATA)
 	@$(NORMAL_INSTALL)
 	@list='$(dist_pkgdata_DATA)'; test -n "$(pkgdatadir)" || list=; \

@@ -1,10 +1,10 @@
 SUBDIRS = images
 
-bin_PROGRAMS = gvba
+bin_PROGRAMS = gvbarr
 
-noinst_LIBRARIES = libgvba.a
+noinst_LIBRARIES = libgvbarr.a
 
-gvba_SOURCES = \
+gvbarr_SOURCES = \
 	configfile.cpp		\
 	configfile.h		\
 	filters.cpp		\
@@ -26,26 +26,26 @@ gvba_SOURCES = \
 	window.cpp		\
 	window.h
 
-gvba_LDADD = libgvba.a @VBA_LIBS@ @GTKMM_LIBS@ @LIBINTL@ @SDL_LIBS@
+gvbarr_LDADD = libgvba.a @VBA_LIBS@ @GTKMM_LIBS@ @LIBINTL@ @SDL_LIBS@
 
-gvba_DEPENDENCIES = libgvba.a @VBA_LIBS@
+gvbarr_DEPENDENCIES = libgvba.a @VBA_LIBS@
 
-gvba_CPPFLAGS = \
+gvbarr_CPPFLAGS = \
 	-I$(top_srcdir)/src \
 	-DPKGDATADIR=\"$(pkgdatadir)\"			\
 	-DLOCALEDIR=\"$(datadir)/locale\"		\
 	-DGETTEXT_PACKAGE=\"$(GETTEXT_PACKAGE)\"	\
 	$(GTKMM_CPPFLAGS)
 
-gvba_CXXFLAGS = @GTKMM_STD@ @GTKMM_CFLAGS@ @SDL_CFLAGS@
+gvbarr_CXXFLAGS = @GTKMM_STD@ @GTKMM_CFLAGS@ @SDL_CFLAGS@
 
-libgvba_a_SOURCES = \
+libgvbarr_a_SOURCES = \
 	../AutoBuild.h		\
 	../NLS.h		\
 	../Port.h
 
-libgvba_a_CPPFLAGS = -DSDL
+libgvbarr_a_CPPFLAGS = -DSDL
 
-libgvba_a_CXXFLAGS = -fno-exceptions
+libgvbarr_a_CXXFLAGS = -fno-exceptions
 
 dist_pkgdata_DATA = vba.glade
