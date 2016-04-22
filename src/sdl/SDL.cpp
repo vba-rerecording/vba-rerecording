@@ -48,6 +48,8 @@
 
 using std::string;
 
+#define DELTA_SIZE (322*242*4)
+
 #define GBC_CAPABLE ((gbRom[0x143] & 0x80) != 0)
 #define SGB_CAPABLE (gbRom[0x146] == 0x03)
 
@@ -1703,7 +1705,7 @@ void sdlPollEvents()
               systemSoundPause();
           }
 
-          memset(delta,255,sizeof(delta));
+          memset(delta,255,DELTA_SIZE);
         }
       }
       break;
@@ -2653,8 +2655,8 @@ int main(int argc, char **argv)
     ifbFunction = NULL;
 
   if(delta == NULL) {
-    delta = (u8*)malloc(322*242*4);
-    memset(delta, 255, 322*242*4);
+    delta = (u8*)malloc(DELTA_SIZE);
+    memset(delta, 255, DELTA_SIZE);
   }
 
   if(!soundOffFlag)
