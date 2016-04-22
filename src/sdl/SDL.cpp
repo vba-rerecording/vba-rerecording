@@ -2688,21 +2688,24 @@ int main(int argc, char **argv)
   {
     VBAMovieOpen(moviefile, true);
   }
-
-  // The LUA engine specifies that the emulator has
-  // to be paused before this method is called
-  // Since the same should presumably hold for
-  // loading movies and reading the battery,
-  // this is probably the right place to load the
-  // script
   if(loadLUAScript) {
-    if(!VBALoadLuaCode(luaScriptFile.c_str())){
-      // FIXME: While this is accurate it is not exactly helpful.
-      fprintf(stderr, "Failed to load and run lua script %s", luaScriptFile);
-    };
+    // The emulator has to be paused and on a frame
+    // boundary to properly sync with the LUA engine
+    pauseNextFrame = true;
   }
 
   while(emulating) {
+    // Wait for the frame boundary to be hit
+    // FIXME: What if for some reason the pause
+    // flag is triggered early for some other reason?
+    if(paused && loadLUAScript) {
+      // Now we can properly load the lua script
+      if(!VBALoadLuaCode(luaScriptFile.c_str())){
+        // FIXME: While this is accurate it is not exactly helpful.
+        fprintf(stderr, "Failed to load and run lua script %s", luaScriptFile);
+      };
+      loadLUAScript = false;
+    }
     if(!paused && active) {
       if(debugger && theEmulator.emuHasDebugger)
         dbgMain();
