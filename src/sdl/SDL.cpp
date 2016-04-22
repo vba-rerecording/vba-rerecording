@@ -2081,7 +2081,7 @@ void file_run()
 
 int main(int argc, char **argv)
 {
-  fprintf(stderr, "VisualBoyAdvance version %s [SDL]\n", VERSION);
+  fprintf(stderr, "VisualBoyAdvance Rerecording version %s [SDL]\n", VERSION);
 
   arg0 = argv[0];
 
@@ -2694,7 +2694,7 @@ int main(int argc, char **argv)
     	sdlReadBattery();
   	  break;
   }
-  SDL_WM_SetCaption("VisualBoyAdvance", NULL);
+  SDL_WM_SetCaption("VisualBoyAdvance Rerecording", NULL);
 
   char *moviefile = getenv("AUTODEMO");
   if (moviefile)
@@ -2959,9 +2959,9 @@ void systemShowSpeed(int speed)
   if(!fullscreen && showSpeed) {
     char buffer[80];
     if(showSpeed == 1)
-      sprintf(buffer, "VisualBoyAdvance-%3d%%", systemSpeed);
+      sprintf(buffer, "VisualBoyAdvance Rerecording-%3d%%", systemSpeed);
     else
-      sprintf(buffer, "VisualBoyAdvance-%3d%%(%d, %d fps)", systemSpeed,
+      sprintf(buffer, "VisualBoyAdvance Rerecording-%3d%%(%d, %d fps)", systemSpeed,
               systemFrameSkip,
               showRenderedFrames);
 
