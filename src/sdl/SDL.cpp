@@ -342,6 +342,7 @@ struct option sdlOptions[] = {
   { "recordmovie", required_argument, 0, 'r' },
   { "playmovie", required_argument, 0, 'p' },
   { "watchmovie", required_argument, 0, 'w' },
+  { "lua-script", required_argument, 0, 'l' },
   { NULL, no_argument, NULL, 0 }
 };
 
@@ -847,7 +848,7 @@ FILE *sdlFindFile(const char *name)
 #else // ! WIN32
 #define PATH_SEP ":"
 #define FILE_SEP '/'
-#define EXE_NAME "VisualBoyAdvance"
+#define EXE_NAME "vbarr"
 #endif // ! WIN32
 
   fprintf(stderr, "Searching for file %s\n", name);
@@ -888,6 +889,9 @@ FILE *sdlFindFile(const char *name)
       return f;
 #endif // ! WIN32
 
+  // FIXME: Is always searching for files in PATH/executable location a good idea?
+  // It could potentially pick up things it is not intented to pick up. Executable
+  // location is understandable given a standalone context, but the PATH?
   if(!strchr(arg0, '/') &&
      !strchr(arg0, '\\')) {
     char *path = getenv("PATH");
