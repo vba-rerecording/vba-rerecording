@@ -1041,30 +1041,30 @@ void sdlReadPreferences(FILE *f)
       joypad[2][KEY_BUTTON_SPEED] = sdlFromHex(value);
     } else if(!strcmp(key, "Joy2_Capture")) {
       joypad[2][KEY_BUTTON_CAPTURE] = sdlFromHex(value);
-    } else if(!strcmp(key,"Joy4_Left")) {
-      joypad[4][KEY_LEFT] = sdlFromHex(value);
-    } else if(!strcmp(key, "Joy4_Right")) {
-      joypad[4][KEY_RIGHT] = sdlFromHex(value);
-    } else if(!strcmp(key, "Joy4_Up")) {
-      joypad[4][KEY_UP] = sdlFromHex(value);
-    } else if(!strcmp(key, "Joy4_Down")) {
-      joypad[4][KEY_DOWN] = sdlFromHex(value);
-    } else if(!strcmp(key, "Joy4_A")) {
-      joypad[4][KEY_BUTTON_A] = sdlFromHex(value);
-    } else if(!strcmp(key, "Joy4_B")) {
-      joypad[4][KEY_BUTTON_B] = sdlFromHex(value);
-    } else if(!strcmp(key, "Joy4_L")) {
-      joypad[4][KEY_BUTTON_L] = sdlFromHex(value);
-    } else if(!strcmp(key, "Joy4_R")) {
-      joypad[4][KEY_BUTTON_R] = sdlFromHex(value);
-    } else if(!strcmp(key, "Joy4_Start")) {
-      joypad[4][KEY_BUTTON_START] = sdlFromHex(value);
-    } else if(!strcmp(key, "Joy4_Select")) {
-      joypad[4][KEY_BUTTON_SELECT] = sdlFromHex(value);
-    } else if(!strcmp(key, "Joy4_Speed")) {
-      joypad[4][KEY_BUTTON_SPEED] = sdlFromHex(value);
-    } else if(!strcmp(key, "Joy4_Capture")) {
-      joypad[4][KEY_BUTTON_CAPTURE] = sdlFromHex(value);
+    } else if(!strcmp(key,"Joy3_Left")) {
+      joypad[3][KEY_LEFT] = sdlFromHex(value);
+    } else if(!strcmp(key, "Joy3_Right")) {
+      joypad[3][KEY_RIGHT] = sdlFromHex(value);
+    } else if(!strcmp(key, "Joy3_Up")) {
+      joypad[3][KEY_UP] = sdlFromHex(value);
+    } else if(!strcmp(key, "Joy3_Down")) {
+      joypad[3][KEY_DOWN] = sdlFromHex(value);
+    } else if(!strcmp(key, "Joy3_A")) {
+      joypad[3][KEY_BUTTON_A] = sdlFromHex(value);
+    } else if(!strcmp(key, "Joy3_B")) {
+      joypad[3][KEY_BUTTON_B] = sdlFromHex(value);
+    } else if(!strcmp(key, "Joy3_L")) {
+      joypad[3][KEY_BUTTON_L] = sdlFromHex(value);
+    } else if(!strcmp(key, "Joy3_R")) {
+      joypad[3][KEY_BUTTON_R] = sdlFromHex(value);
+    } else if(!strcmp(key, "Joy3_Start")) {
+      joypad[3][KEY_BUTTON_START] = sdlFromHex(value);
+    } else if(!strcmp(key, "Joy3_Select")) {
+      joypad[3][KEY_BUTTON_SELECT] = sdlFromHex(value);
+    } else if(!strcmp(key, "Joy3_Speed")) {
+      joypad[3][KEY_BUTTON_SPEED] = sdlFromHex(value);
+    } else if(!strcmp(key, "Joy3_Capture")) {
+      joypad[3][KEY_BUTTON_CAPTURE] = sdlFromHex(value);
     } else if(!strcmp(key, "Motion_Left")) {
       motion[KEY_LEFT] = sdlFromHex(value);
     } else if(!strcmp(key, "Motion_Right")) {
