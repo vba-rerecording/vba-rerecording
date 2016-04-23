@@ -177,6 +177,7 @@ char movieFileName[2048];
 char captureDir[2048];
 char saveDir[2048];
 char batteryDir[2048];
+char originalWorkingDirectory[2048];
 
 static char *rewindMemory = NULL;
 static int rewindPos = 0;
@@ -815,6 +816,10 @@ void sdlCheckDirectory(char *dir)
   }
 }
 
+// FIXME: I see a lot of calls to this
+// function, but always on filename, which
+// is already the baseName curtosy of
+// utilGetBaseName
 char *sdlGetFilename(char *name)
 {
   static char filebuffer[2048];
@@ -1330,13 +1335,13 @@ static int sdlCalculateMaskWidth(u32 mask)
 
 void sdlWriteState(int num)
 {
-  char stateName[2048];
+  char stateName[4096];
 
   if(saveDir[0])
     sprintf(stateName, "%s/%s%d.sgm", saveDir, sdlGetFilename(filename),
             num+1);
   else
-    sprintf(stateName,"%s%d.sgm", filename, num+1);
+    sprintf(stateName,"%s/%s%d.sgm", originalWorkingDirectory, filename, num+1);
   if(theEmulator.emuWriteState)
     theEmulator.emuWriteState(stateName);
   sprintf(stateName, "Wrote state %d", num+1);
@@ -1351,7 +1356,7 @@ void sdlReadState(int num)
     sprintf(stateName, "%s/%s%d.sgm", saveDir, sdlGetFilename(filename),
             num+1);
   else
-    sprintf(stateName,"%s%d.sgm", filename, num+1);
+    sprintf(stateName,"%s/%s%d.sgm", originalWorkingDirectory, filename, num+1);
 
   if(theEmulator.emuReadState)
     theEmulator.emuReadState(stateName);
@@ -1367,7 +1372,7 @@ void sdlWriteBattery()
   if(batteryDir[0])
     sprintf(buffer, "%s/%s.sav", batteryDir, sdlGetFilename(filename));
   else
-    sprintf(buffer, "%s.sav", filename);
+    sprintf(buffer, "%s/%s.sav", originalWorkingDirectory, filename);
 
   theEmulator.emuWriteBattery(buffer);
 
@@ -1381,7 +1386,7 @@ void sdlReadBattery()
   if(batteryDir[0])
     sprintf(buffer, "%s/%s.sav", batteryDir, sdlGetFilename(filename));
   else
-    sprintf(buffer, "%s.sav", filename);
+    sprintf(buffer, "%s/%s.sav", originalWorkingDirectory, filename);
 
   bool res = false;
 
@@ -2082,6 +2087,11 @@ void file_run()
 int main(int argc, char **argv)
 {
   fprintf(stderr, "VisualBoyAdvance Rerecording version %s [SDL]\n", VERSION);
+  // Immediately store the current working directory so we can use it later
+  if(!GETCWD(originalWorkingDirectory, 2048)) {
+    fprintf(stderr, "Error while storing the current working directory\n");
+    exit(-1);
+  }
 
   arg0 = argv[0];
 
@@ -3040,20 +3050,20 @@ int systemFramesToSkip(){
 
 int systemScreenCapture(int a)
 {
-  char buffer[2048];
+  char buffer[4096];
 
   if(captureFormat) {
     if(captureDir[0])
       sprintf(buffer, "%s/%s%02d.bmp", captureDir, sdlGetFilename(filename), a);
     else
-      sprintf(buffer, "%s%02d.bmp", filename, a);
+      sprintf(buffer, "%s/%s%02d.bmp", originalWorkingDirectory, filename, a);
 
     theEmulator.emuWriteBMP(buffer);
   } else {
     if(captureDir[0])
       sprintf(buffer, "%s/%s%02d.png", captureDir, sdlGetFilename(filename), a);
     else
-      sprintf(buffer, "%s%02d.png", filename, a);
+      sprintf(buffer, "%s/%s%02d.png", originalWorkingDirectory, filename, a);
     theEmulator.emuWritePNG(buffer);
   }
 
