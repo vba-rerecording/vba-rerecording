@@ -2,7 +2,7 @@
 PROJECT(VBA-ReRecording ASM C CXX)
 
 # This is the version needed for nativednasm support
-cmake_minimum_required( VERSION 2.8.4 )
+cmake_minimum_required( VERSION 3.0.2 )
 enable_language(ASM_NASM)
 
 find_package ( ZLIB REQUIRED )
@@ -11,6 +11,7 @@ find_package ( SDL REQUIRED )
 find_package ( BISON REQUIRED )
 find_package ( FLEX REQUIRED )
 find_package ( Gettext REQUIRED )
+find_package ( Lua51  REQUIRED )
 
 if (NOT BISON_FOUND OR NOT FLEX_FOUND )
 
@@ -41,16 +42,16 @@ IF( GTK )
 ENDIF( GTK )
 
 IF( NOT NO_SDL )
-    IF( SDL_FOUND )
+    IF( SDL_FOUND AND LUA51_FOUND )
         SET( CAN_BUILD_VBARR 1 )
-    ENDIF( SDL_FOUND )
+    ENDIF( SDL_FOUND AND LUA51_FOUND )
 ENDIF( NOT NO_SDL )
 
 # Check that the dependencies are met to build the GTK frontend
 IF( GTK )
-    IF( GLIBMM_FOUND AND GTKMM_FOUND AND GLADEMM_FOUND AND SDL_FOUND AND GETTEXT_FOUND )
+    IF( GLIBMM_FOUND AND GTKMM_FOUND AND GLADEMM_FOUND AND SDL_FOUND AND GETTEXT_FOUND AND LUA51_FOUND )
         SET( CAN_BUILD_GVBARR 1 )
-    ENDIF( GLIBMM_FOUND AND GTKMM_FOUND AND GLADEMM_FOUND AND SDL_FOUND AND GETTEXT_FOUND )
+    ENDIF( GLIBMM_FOUND AND GTKMM_FOUND AND GLADEMM_FOUND AND SDL_FOUND AND GETTEXT_FOUND AND LUA51_FOUND )
 ENDIF( GTK )
 
 # Set the default install dir
@@ -68,7 +69,7 @@ ENDIF( NOT SYSCONFDIR )
 # C defines
 ADD_DEFINITIONS (-DHAVE_NETINET_IN_H -DHAVE_ARPA_INET_H -DHAVE_ZLIB_H -DFINAL_VERSION -DSDL -DSYSCONFDIR="${SYSCONFDIR}")
 
-ADD_DEFINITIONS (-DVERSION="${VERSION}" -DPKGDATADIR="${PKGDATADIR}" -DPACKAGE="vba-rerecording")
+ADD_DEFINITIONS (-DVERSION="${VERSION}" -DPKGDATADIR="${PKGDATADIR}" -DPACKAGE="vba-rerecording" -DUSE_EXTERNAL_LUA)
 
 # The ASM core is disabled by default because we don't know on which platform we are
 IF( NOT USE_ASM_CORE )
@@ -145,39 +146,6 @@ SET(SRC_SDL
     src/sdl/getopt1.c
 )
 
-SET(SRC_LUA
-  src/lua/src/lapi.c
-  src/lua/src/lauxlib.c
-  src/lua/src/lbaselib.c
-  src/lua/src/lcode.c
-  src/lua/src/ldblib.c
-  src/lua/src/ldebug.c
-  src/lua/src/ldo.c
-  src/lua/src/ldump.c
-  src/lua/src/lfunc.c
-  src/lua/src/lgc.c
-  src/lua/src/linit.c
-  src/lua/src/liolib.c
-  src/lua/src/llex.c
-  src/lua/src/lmathlib.c
-  src/lua/src/lmem.c
-  src/lua/src/loadlib.c
-  src/lua/src/lobject.c
-  src/lua/src/lopcodes.c
-  src/lua/src/loslib.c
-  src/lua/src/lparser.c
-  src/lua/src/lstate.c
-  src/lua/src/lstring.c
-  src/lua/src/lstrlib.c
-  src/lua/src/ltable.c
-  src/lua/src/ltablib.c
-  src/lua/src/ltm.c
-  src/lua/src/lundump.c
-  src/lua/src/lvm.c
-  src/lua/src/lzio.c
-  src/lua/src/print.c
-)
-
 SET(SRC_FILTERS
     src/filters/2xSaI.cpp
     src/filters/admame.cpp
@@ -208,6 +176,7 @@ INCLUDE_DIRECTORIES(
     ${ZLIB_INCLUDE_DIR}
     ${PNG_INCLUDE_DIR}
     ${SDL_INCLUDE_DIR}
+    ${LUA_INCLUDE_DIR}
 )
 
 IF( CAN_BUILD_GVBARR )
@@ -248,12 +217,6 @@ add_library (
 )
 
 add_library (
-    libgblua
-    ${PROJECT_SRCS}
-    ${SRC_LUA}
-)
-
-add_library (
     libfilter
     ${PROJECT_SRCS}
     ${SRC_FILTERS}
@@ -271,10 +234,10 @@ IF( CAN_BUILD_VBARR )
         libgbcom
         libgb
         libgba
-        libgblua
         ${SDL_LIBRARY}
         ${ZLIB_LIBRARY}
         ${PNG_LIBRARY}
+        ${LUA_LIBRARIES}
     )
 
     INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/vbarr DESTINATION bin)
@@ -318,11 +281,11 @@ IF( CAN_BUILD_GVBARR )
         libgbcom
         libgb
         libgba
-        libgblua
         ${ZLIB_LIBRARY}
         ${PNG_LIBRARY}
         ${GLADEMM_LIBRARIES}
         ${SDL_LIBRARY}
+        ${LUA_LIBRARIES}
     )
 
 

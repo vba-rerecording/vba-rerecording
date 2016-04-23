@@ -65,13 +65,21 @@ bool DemandLua()
 #endif
 }
 
+#ifndef USE_EXTERNAL_LUA
 extern "C"
 {
 #include "../lua/src/lua.h"
 #include "../lua/src/lauxlib.h"
 #include "../lua/src/lualib.h"
-#include "../lua/src/lstate.h"
 }
+#else
+extern "C"
+{
+#include "lua5.1/lua.h"
+#include "lua5.1/lauxlib.h"
+#include "lua5.1/lualib.h"
+}
+#endif
 #include "vbalua.h"
 
 #include "../SFMT/SFMT.c"
@@ -167,9 +175,6 @@ static const char *luaMemHookTypeStrings [] =
 
 //make sure we have the right number of strings
 CTASSERT(sizeof(luaMemHookTypeStrings) / sizeof(*luaMemHookTypeStrings) ==  LUAMEMHOOK_COUNT)
-
-static char *rawToCString(lua_State * L, int idx = 0);
-static const char *toCString(lua_State *L, int idx = 0);
 
 typedef void (*GetColorFunc)(const uint8 *, uint8 *, uint8 *, uint8 *);
 typedef void (*SetColorFunc)(uint8 *, uint8, uint8, uint8);
@@ -439,262 +444,13 @@ static std::vector<const void *> s_metacallStack; // prevents infinite recursion
 												  // that contains that something (when cycle is found, print the inner result
 												  // without using __tostring)
 
-#define APPENDSPRINT(...) { \
-	int _n = snprintf(ptr, remaining, __VA_ARGS__); \
-	if (_n >= 0) { ptr += _n; remaining -= _n; } \
-	else { remaining = 0; } \
-	}
-static void toCStringConverter(lua_State *L, int i, char * &ptr, int &remaining)
-{
-	if (remaining <= 0)
-		return;
-
-	const char *str = ptr; // for debugging
-
-	// if there is a __tostring metamethod then call it
-	int usedMeta = luaL_callmeta(L, i, "__tostring");
-	if (usedMeta)
-	{
-		std::vector<const void *>::const_iterator foundCycleIter = std::find(s_metacallStack.begin(), s_metacallStack.end(), lua_topointer(L, i));
-		if (foundCycleIter != s_metacallStack.end())
-		{
-			lua_pop(L, 1);
-			usedMeta = false;
-		}
-		else
-		{
-			s_metacallStack.push_back(lua_topointer(L, i));
-			i = lua_gettop(L);
-		}
-	}
-
-	switch (lua_type(L, i))
-	{
-	case LUA_TNONE:
-		break;
-	case LUA_TNIL:
-		APPENDSPRINT("nil") break;
-	case LUA_TBOOLEAN:
-		APPENDSPRINT(lua_toboolean(L, i) ? "true" : "false") break;
-	case LUA_TSTRING:
-		APPENDSPRINT("%s", lua_tostring(L, i)) break;
-	case LUA_TNUMBER:
-		APPENDSPRINT("%.12Lg", lua_tonumber(L, i)) break;
-	case LUA_TFUNCTION:
-		if ((L->base + i - 1)->value.gc->cl.c.isC)
-		{
-			//lua_CFunction func = lua_tocfunction(L, i);
-			//std::map<lua_CFunction, const char*>::iterator iter = s_cFuncInfoMap.find(func);
-			//if(iter == s_cFuncInfoMap.end())
-			goto defcase;
-			//APPENDSPRINT("function(%s)", iter->second)
-		}
-		else
-		{
-			APPENDSPRINT("function(")
-			Proto * p = (L->base + i - 1)->value.gc->cl.l.p;
-			int numParams = p->numparams + (p->is_vararg ? 1 : 0);
-			for (int n = 0; n < p->numparams; n++)
-			{
-				APPENDSPRINT("%s", getstr(p->locvars[n].varname))
-				if (n != numParams - 1)
-					APPENDSPRINT(",")
-			}
-			if (p->is_vararg)
-				APPENDSPRINT("...")
-				APPENDSPRINT(")")
-		}
-		break;
-defcase: default:
-		APPENDSPRINT("%s:%p", luaL_typename(L, i), lua_topointer(L, i))
-		break;
-	case LUA_TTABLE:
-		{
-			// first make sure there's enough stack space
-			if (!lua_checkstack(L, 4))
-			{
-				// note that even if lua_checkstack never returns false,
-				// that doesn't mean we didn't need to call it,
-				// because calling it retrieves stack space past LUA_MINSTACK
-				goto defcase;
-			}
-
-			std::vector<const void *>::const_iterator foundCycleIter =
-				std::find(s_tableAddressStack.begin(), s_tableAddressStack.end(), lua_topointer(L, i));
-			if (foundCycleIter != s_tableAddressStack.end())
-			{
-				int parentNum = s_tableAddressStack.end() - foundCycleIter;
-				if (parentNum > 1)
-					APPENDSPRINT("%s:parent^%d", luaL_typename(L, i), parentNum)
-				else
-					APPENDSPRINT("%s:parent", luaL_typename(L, i))
-			}
-			else
-			{
-				s_tableAddressStack.push_back(lua_topointer(L, i));
-				struct Scope { ~Scope(){ s_tableAddressStack.pop_back(); } } scope;
-
-				APPENDSPRINT("{")
-
-				lua_pushnil(L); // first key
-				int		   keyIndex = lua_gettop(L);
-				int		   valueIndex = keyIndex + 1;
-				bool	   first = true;
-				bool	   skipKey = true; // true if we're still in the "array part" of the table
-				lua_Number arrayIndex = (lua_Number)0;
-				while (lua_next(L, i))
-				{
-					if (first)
-						first = false;
-					else
-						APPENDSPRINT(", ")
-					if (skipKey)
-					{
-						arrayIndex += (lua_Number)1;
-						bool keyIsNumber = (lua_type(L, keyIndex) == LUA_TNUMBER);
-						skipKey = keyIsNumber && (lua_tonumber(L, keyIndex) == arrayIndex);
-					}
-					if (!skipKey)
-					{
-						bool keyIsString = (lua_type(L, keyIndex) == LUA_TSTRING);
-						bool invalidLuaIdentifier = (!keyIsString || !isalphaorunderscore(*lua_tostring(L, keyIndex)));
-						if (invalidLuaIdentifier)
-							if (keyIsString)
-								APPENDSPRINT("['")
-							else
-								APPENDSPRINT("[")
-
-						toCStringConverter(L, keyIndex, ptr, remaining);
-						// key
-
-						if (invalidLuaIdentifier)
-							if (keyIsString)
-								APPENDSPRINT("']=")
-							else
-								APPENDSPRINT("]=")
-						else
-							APPENDSPRINT("=")
-					}
-
-					bool valueIsString = (lua_type(L, valueIndex) == LUA_TSTRING);
-					if (valueIsString)
-						APPENDSPRINT("'")
-
-					toCStringConverter(L, valueIndex, ptr, remaining);  // value
-
-					if (valueIsString)
-						APPENDSPRINT("'")
-
-					lua_pop(L, 1);
-
-					if (remaining <= 0)
-					{
-						lua_settop(L, keyIndex - 1); // stack might not be clean yet if we're breaking
-													// early
-						break;
-					}
-				}
-				APPENDSPRINT("}")
-			}
-		}
-		break;
-	}
-
-	if (usedMeta)
-	{
-		s_metacallStack.pop_back();
-		lua_pop(L, 1);
-	}
-}
-
 static const int s_tempStrMaxLen = 64 * 1024;
 static char s_tempStr [s_tempStrMaxLen];
-
-static char *rawToCString(lua_State *L, int idx)
-{
-	int a = idx > 0 ? idx : 1;
-	int n = idx > 0 ? idx : lua_gettop(L);
-
-	char *ptr = s_tempStr;
-	*ptr = 0;
-
-	int remaining = s_tempStrMaxLen;
-	for (int i = a; i <= n; i++)
-	{
-		toCStringConverter(L, i, ptr, remaining);
-		if (i != n)
-			APPENDSPRINT(" ")
-	}
-
-	if (remaining < 3)
-	{
-		while (remaining < 6)
-			remaining++, ptr--;
-		APPENDSPRINT("...")
-	}
-	APPENDSPRINT("\r\n")
-	// the trailing newline is so print() can avoid having to do wasteful things to print its newline
-	// (string copying would be wasteful and calling info.print() twice can be extremely slow)
-	// at the cost of functions that don't want the newline needing to trim off the last two characters
-	// (which is a very fast operation and thus acceptable in this case)
-
-	return s_tempStr;
-}
-#undef APPENDSPRINT
-
-// replacement for luaB_tostring() that is able to show the contents of tables (and formats numbers better, and show function
-// prototypes)
-// can be called directly from lua via tostring(), assuming tostring hasn't been reassigned
-static int tostring(lua_State *L)
-{
-	char *str = rawToCString(L);
-	str[strlen(str) - 2] = 0; // hack: trim off the \r\n (which is there to simplify the print function's
-								// task)
-	lua_pushstring(L, str);
-	return 1;
-}
-
-// like rawToCString, but will check if the global Lua function tostring()
-// has been replaced with a custom function, and call that instead if so
-static const char *toCString(lua_State *L, int idx)
-{
-	int a = idx > 0 ? idx : 1;
-	int n = idx > 0 ? idx : lua_gettop(L);
-	lua_getglobal(L, "tostring");
-	lua_CFunction cf = lua_tocfunction(L, -1);
-	if (cf == tostring || lua_isnil(L, -1)) // optimization: if using our own C tostring function, we can
-											// bypass the call through Lua and all the string object
-											// allocation that would entail
-	{
-		lua_pop(L, 1);
-		return rawToCString(L, idx);
-	}
-	else // if the user overrided the tostring function, we have to actually call it and store the
-		 // temporarily allocated string it returns
-	{
-		lua_pushstring(L, "");
-		for (int i = a; i <= n; i++)
-		{
-			lua_pushvalue(L, -2); // function to be called
-			lua_pushvalue(L, i); // value to print
-			lua_call(L, 1, 1);
-			if (lua_tostring(L, -1) == NULL)
-				luaL_error(L, LUA_QL("tostring") " must return a string to " LUA_QL("print"));
-			lua_pushstring(L, (i < n) ? " " : "\r\n");
-			lua_concat(L, 3);
-		}
-		const char *str = lua_tostring(L, -1);
-		strncpy(s_tempStr, str, s_tempStrMaxLen);
-		s_tempStr[s_tempStrMaxLen - 1] = 0;
-		lua_pop(L, 2);
-		return s_tempStr;
-	}
-}
 
 // replacement for luaB_print() that goes to the appropriate textbox instead of stdout
 static int print(lua_State *L)
 {
-	const char *str = toCString(L);
+	const char *str = lua_tostring(L, -1);
 
 	int uid = info_uid; //luaStateToUIDMap[L->l_G->mainthread];
 	//LuaContextInfo& info = GetCurrentInfo();
@@ -715,7 +471,7 @@ static int printerror(lua_State *L, int idx)
 	if (idx < 0)
 		idx = lua_gettop(L) + 1 + idx;
 
-	const char *str = rawToCString(L, idx);
+	const char *str = lua_tostring(L, idx);
 
 	int uid = info_uid; //luaStateToUIDMap[L->l_G->mainthread];
 	//LuaContextInfo& info = GetCurrentInfo();
@@ -937,25 +693,24 @@ static int memory_setregister(lua_State *L)
 	return 0;
 }
 
-void HandleCallbackError(lua_State *L)
+void HandleCallbackError(int errorcode, lua_State *L)
 {
-	if (L->errfunc || L->errorJmp)
-		luaL_error(L, "%s", lua_tostring(L, -1));
-	else
-	{
-		lua_pushnil(LUA);
-		lua_setfield(LUA, LUA_REGISTRYINDEX, guiCallbackTable);
+	// We do not have to call luaL_error since lua already
+	// does that for us in most cases (A memory error is
+  // an exception. TODO: Choose best course of action
+  // based on the error code)
+	lua_pushnil(LUA);
+	lua_setfield(LUA, LUA_REGISTRYINDEX, guiCallbackTable);
 
-		// Error?
+	// Error?
 //#if (defined(WIN32) && !defined(SDL))
 //		info_print(info_uid, lua_tostring(LUA, -1)); //Clear_Sound_Buffer();
 // AfxGetApp()->m_pMainWnd->MessageBox(lua_tostring(LUA, -1), "Lua run error", MB_OK | MB_ICONSTOP);
 //#else
 //		fprintf(stderr, "Lua thread bombed out: %s\n", lua_tostring(LUA, -1));
 //#endif
-		printerror(LUA, -1);
-		VBALuaStop();
-	}
+	printerror(LUA, -1);
+	VBALuaStop();
 }
 
 void CallRegisteredLuaFunctions(LuaCallID calltype)
@@ -975,7 +730,7 @@ void CallRegisteredLuaFunctions(LuaCallID calltype)
 	{
 		errorcode = lua_pcall(LUA, 0, 0, 0);
 		if (errorcode)
-			HandleCallbackError(LUA);
+			HandleCallbackError(errorcode, LUA);
 	}
 	else
 	{
@@ -1137,7 +892,7 @@ static void CallRegisteredLuaMemHook_LuaMatch(unsigned int address, int size, un
 					//RefreshScriptSpeedStatus();
 					if (errorcode)
 					{
-						HandleCallbackError(L);
+						HandleCallbackError(errorcode, L);
 						//int uid = iter->first;
 						//HandleCallbackError(L,info,uid,true);
 					}
@@ -3198,7 +2953,7 @@ static int gui_text(lua_State *L)
 	x = luaL_checkinteger(L, 1);
 	y = luaL_checkinteger(L, 2);
 	//msg = luaL_checkstring(L, 3);
-	msg = toCString(L, 3);
+	msg = lua_tostring(L, 3);
 
 	//	if (x < 0 || x >= LUA_SCREEN_WIDTH || y < 0 || y >= (LUA_SCREEN_HEIGHT - font_height))
 	//		luaL_error(L,"bad coordinates");
@@ -4202,27 +3957,35 @@ static UBits barg(lua_State *L, int idx)
 	BitNum bn;
 	UBits  b;
 	bn.n = lua_tonumber(L, idx);
-#if defined(LUA_NUMBER_DOUBLE)
-	bn.n += 6755399441055744.0; /* 2^52+2^51 */
-#ifdef SWAPPED_DOUBLE
-	b = (UBits)(bn.b >> 32);
+#if LUA_VERSION_NUM < 502
+	bn.n = lua_tonumber(L, idx);
 #else
-	b = (UBits)(bn.b & 0xffffffff);
+  bn.n = luaL_checknumber(L, idx);
+#endif
+#if defined(LUA_NUMBER_DOUBLE)
+  bn.n += 6755399441055744.0;  /* 2^52+2^51 */
+#ifdef SWAPPED_DOUBLE
+  b = (UBits)(bn.b >> 32);
+#else
+  b = (UBits)bn.b;
 #endif
 #elif defined(LUA_NUMBER_INT) || defined(LUA_NUMBER_LONG) || \
-	defined(LUA_NUMBER_LONGLONG) || defined(LUA_NUMBER_LONG_LONG) || \
-	defined(LUA_NUMBER_LLONG)
-	if (sizeof(UBits) == sizeof(lua_Number))
-		b = bn.b;
-	else
-		b = (UBits)(SBits)bn.n;
+      defined(LUA_NUMBER_LONGLONG) || defined(LUA_NUMBER_LONG_LONG) || \
+      defined(LUA_NUMBER_LLONG)
+  if (sizeof(UBits) == sizeof(lua_Number))
+    b = bn.b;
+  else
+    b = (UBits)(SBits)bn.n;
 #elif defined(LUA_NUMBER_FLOAT)
 #error "A 'float' lua_Number type is incompatible with this library"
 #else
 #error "Unknown number type, check LUA_NUMBER_* in luaconf.h"
 #endif
-	if (b == 0 && !lua_isnumber(L, idx))
-		luaL_typerror(L, idx, "number");
+#if LUA_VERSION_NUM < 502
+  if (b == 0 && !lua_isnumber(L, idx)) {
+    luaL_typerror(L, idx, "number");
+  }
+#endif
 	return b;
 }
 
@@ -4596,7 +4359,7 @@ void CallExitFunction(void)
 	}
 
 	if (errorcode)
-		HandleCallbackError(LUA);
+		HandleCallbackError(errorcode, LUA);
 }
 
 void VBALuaFrameBoundary(void)
@@ -4726,7 +4489,6 @@ int VBALoadLuaCode(const char *filename)
 
 		// register a few utility functions outside of libraries (in the global namespace)
 		lua_register(LUA, "print", print);
-		lua_register(LUA, "tostring", tostring);
 		lua_register(LUA, "addressof", addressof);
 		lua_register(LUA, "copytable", copytable);
 
