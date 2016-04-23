@@ -2158,6 +2158,7 @@ int main(int argc, char **argv)
       if(optarg == NULL) {
         fprintf(stderr, "Missing IPS name\n");
         exit(-1);
+      } else {
         strcpy(ipsname, optarg);
       }
       break;
