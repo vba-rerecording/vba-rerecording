@@ -450,17 +450,28 @@ static char s_tempStr [s_tempStrMaxLen];
 // replacement for luaB_print() that goes to the appropriate textbox instead of stdout
 static int print(lua_State *L)
 {
-	const char *str = lua_tostring(L, -1);
-
-	int uid = info_uid; //luaStateToUIDMap[L->l_G->mainthread];
-	//LuaContextInfo& info = GetCurrentInfo();
-
-	if (info_print)
-		info_print(uid, str);
-	else
-		puts(str);
-
-	//worry(L, 100);
+	int n = lua_gettop(L);  /* number of arguments */
+	int i;
+	lua_getglobal(L, "tostring");
+	for (i=1; i<=n; i++) {
+	 const char *s;
+	 lua_pushvalue(L, -1);  /* function to be called */
+	 lua_pushvalue(L, i);   /* value to print */
+	 lua_call(L, 1, 1);
+	 s = lua_tostring(L, -1);  /* get result */
+	 if (s == NULL)
+		 return luaL_error(L, LUA_QL("tostring") " must return a string to "
+													LUA_QL("print"));
+	 if(info_print)
+	 	 info_print(info_uid, s);
+	 else {
+	 	 if (i>1) fputs("\t", stdout);
+	 	 fputs(s, stdout);
+	 }
+	 if(!info_print)
+	   fputs("\n", stdout);
+	 lua_pop(L, 1);  /* pop result */
+	}
 	return 0;
 }
 

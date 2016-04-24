@@ -2621,6 +2621,7 @@ bool gbReadSaveStateFromStream(gzFile gzFile)
 	}
 
 	int version = utilReadInt(gzFile);
+	u8 type = 0;
 	if (version > GBSAVE_GAME_VERSION || version < 0)
 	{
 		systemMessage(MSG_UNSUPPORTED_VB_SGM,
@@ -2727,7 +2728,7 @@ bool gbReadSaveStateFromStream(gzFile gzFile)
 	gbMemoryMap[0x0e] = &gbMemory[0xe000];
 	gbMemoryMap[0x0f] = &gbMemory[0xf000];
 
-	u8 type = gbRom[0x147];
+	type = gbRom[0x147];
 
 	switch (type)
 	{
