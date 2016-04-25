@@ -51,8 +51,6 @@
 #  define VBA_RELEASE_TYPE ""
 # endif
 
-
-
 // A git commit MAY be set for versioning and will be displayed
 // if the version is not build from a tag or if the build
 // is a debug build (Since that is actually valuable information
