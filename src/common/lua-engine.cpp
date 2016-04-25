@@ -1611,7 +1611,6 @@ static int savestate_gc(lua_State *L)
 	remove(filename);
 
 	// We exit, and the garbage collector takes care of the rest.
-	// Edit: Visual Studio needs a return value anyway, so returns 0.
 	return 0;
 }
 
@@ -1640,6 +1639,9 @@ static std::string get_savestate_filename(int which)
 	}
 	else
 	{
+		// Since no which > 0 is given we apparently generate a temporary file
+		// FIXME: tempnam is deprecated in favor of mkstemp. unfortunately
+		// this does not just generate a name, but also a file
 		char *stateNameTemp = tempnam(NULL, "snlua");
 		std::string stateName = stateNameTemp;
 
