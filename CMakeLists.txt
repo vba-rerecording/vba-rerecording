@@ -8,6 +8,7 @@ PROJECT(VBA-ReRecording C CXX)
 # TODO: Implement c vs. mmx core choice (-DMMX plus build mmx asm filter)
 # TODO: Fix and allow enabling of profiling (-DPROFILING and build prof)
 # TODO: Allow development features toggle (-DDEV_VERSION)
+# TODO: BKPT_SUPPORT?
 
 # This is the version needed for nativednasm support
 cmake_minimum_required( VERSION 2.8.4 )
