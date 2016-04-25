@@ -1,9 +1,18 @@
 # CMake build file. Based on the file used by vba-m
-PROJECT(VBA-ReRecording ASM C CXX)
+PROJECT(VBA-ReRecording C CXX)
+# No need to check for ASM until MMX support
+# PROJECT(VBA-ReRecording ASM C CXX)
+
+# List of todo's of functionality provided by the autotools chain this
+# cmake script does not yet provided
+# TODO: Implement c vs. mmx core choice (-DMMX plus build mmx asm filter)
+# TODO: Fix and allow enabling of profiling (-DPROFILING and build prof)
+# TODO: Allow development features toggle (-DDEV_VERSION)
 
 # This is the version needed for nativednasm support
-cmake_minimum_required( VERSION 3.0.2 )
-enable_language(ASM_NASM)
+cmake_minimum_required( VERSION 2.8.4 )
+# This only has to be enabled with mmx support
+# enable_language(ASM_NASM)
 
 find_package ( ZLIB REQUIRED )
 find_package ( PNG REQUIRED )
@@ -13,16 +22,13 @@ find_package ( FLEX REQUIRED )
 find_package ( Gettext REQUIRED )
 find_package ( Lua51  REQUIRED )
 
-if (NOT BISON_FOUND OR NOT FLEX_FOUND )
-
-endif( NOT BISON_FOUND OR NOT FLEX_FOUND )
-
 # Version number
 IF( NOT VERSION )
     SET( VERSION "v24-git" )
 ENDIF( NOT VERSION )
 
 # This is taken from vba-m's file
+# TODO: Figure out why SDLMain.m is a problem.
 # Fill in SDLMAIN_LIBRARY on OS X manually to avoid using SDLMain.m
 # OS X users will have to compile and install SDL from source.
 if( APPLE )
@@ -222,14 +228,18 @@ add_library (
     ${SRC_FILTERS}
 )
 
+IF( NO_SDL AND NOT GTK )
+message(WARNING "You have chosen not to build any frontend")
+ENDIF( NO_SDL AND NOT GTK )
+
 IF( CAN_BUILD_VBARR )
     ADD_EXECUTABLE (
-        vbarr
+        vba-rr
         ${SRC_SDL}
     )
 
     TARGET_LINK_LIBRARIES (
-        vbarr
+        vba-rr
         libfilter
         libgbcom
         libgb
@@ -240,7 +250,7 @@ IF( CAN_BUILD_VBARR )
         ${LUA_LIBRARIES}
     )
 
-    INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/vbarr DESTINATION bin)
+    INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/vba-rr DESTINATION bin)
 ENDIF( CAN_BUILD_VBARR )
 
 IF( CAN_BUILD_GVBARR )
@@ -258,7 +268,7 @@ IF( CAN_BUILD_GVBARR )
                  COMMAND gdk-pixbuf-csource --raw --build-list ${VBA_WM_VARIABLES} > ${CMAKE_CURRENT_BINARY_DIR}/gen/images/vba-wm-pixbufs.h)
 
     ADD_EXECUTABLE (
-        gvbarr
+        gvba-rr
         WIN32
         MACOSX_BUNDLE
         ${SRC_GTK}
@@ -266,17 +276,20 @@ IF( CAN_BUILD_GVBARR )
     )
 
     target_include_directories(
-      gvbarr
+      gvba-rr
       PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/gen
     )
 
-    target_compile_options(
-      gvbarr
-      PUBLIC -std=c++11
+    set_property(
+      TARGET
+      gvba-rr
+      PROPERTY
+      CXX_STANDARD
+      11
     )
 
     TARGET_LINK_LIBRARIES (
-        gvbarr
+        gvba-rr
         libfilter
         libgbcom
         libgb
@@ -289,9 +302,6 @@ IF( CAN_BUILD_GVBARR )
     )
 
 
-    INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/gvbarr DESTINATION bin)
-    # INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/gtk/gvbam.desktop DESTINATION share/applications)
-    # INSTALL(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/gtk/icons/ DESTINATION share/icons/hicolor PATTERN ".svn" EXCLUDE)
-    # INSTALL(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/gtk/ui DESTINATION ${DATA_INSTALL_DIR} PATTERN ".svn" EXCLUDE)
+    INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/gvba-rr DESTINATION bin)
 
 ENDIF( CAN_BUILD_GVBARR )
