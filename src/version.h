@@ -24,7 +24,7 @@
 #	define VBA_COMPILER_DETAIL ""
 #endif
 
-#define VBA_NAME "VisualBoyAdvance Rerecording"
+#define VBA_NAME "VisualBoyAdvance Re-recording"
 
 // There used to be a check here for the version of the GBA core
 // being used. This will no longer be used. If you are building
@@ -93,6 +93,6 @@
 
 #define VBA_VERSION_STRING "v" VBA_RR_VERSION_AS_STRING VBA_SUBVERSION_STRING
 #define VBA_NAME_AND_VERSION VBA_NAME " - " VBA_VERSION_STRING
-#define VBA_RR_SITE "https://github.com/sniperrifle2004/vba-rerecording"
+#define VBA_RR_SITE "https://github.com/vba-rerecording/vba-rerecording"
 
 #endif // !VBA_VERSION_H
