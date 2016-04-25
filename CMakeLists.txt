@@ -9,6 +9,7 @@ PROJECT(VBA-ReRecording C CXX)
 # TODO: Fix and allow enabling of profiling (-DPROFILING and build prof)
 # TODO: Allow development features toggle (-DDEV_VERSION)
 # TODO: BKPT_SUPPORT?
+# TODO: Win32 mingw/cygwin based support
 
 # This is the version needed for nativednasm support
 cmake_minimum_required( VERSION 2.8.4 )
