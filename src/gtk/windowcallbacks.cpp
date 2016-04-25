@@ -17,6 +17,7 @@
 // Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "window.h"
+#include "version.h"
 
 #include <sys/stat.h>
 
@@ -1405,7 +1406,7 @@ void Window::vOnHelpAbout()
   poIconContainer->add(oIcon);
 
   Gtk::Label * poLabel  = dynamic_cast<Gtk::Label *>(poXml->get_widget("VersionLabel"));
-  poLabel->set_markup("<b><big>" PACKAGE " " VERSION "</big></b>");
+  poLabel->set_markup("<b><big>" PACKAGE " " VBA_RR_VERSION_AS_STRING "</big></b>");
 
   poDialog->run();
   delete poDialog;

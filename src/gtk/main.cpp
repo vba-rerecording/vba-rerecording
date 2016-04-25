@@ -29,6 +29,7 @@
 
 #include "images/vba-wm-pixbufs.h"
 
+#include "version.h"
 #include "window.h"
 #include "intl.h"
 
@@ -127,7 +128,7 @@ int main(int argc, char * argv[])
 
   if (iShowVersion)
   {
-    g_print(_("VisualBoyAdvance version %s [GTK+]\n"), VERSION);
+    g_print(_("%s [GTK+]\n"), VBA_NAME_AND_VERSION);
     exit(0);
   }
 

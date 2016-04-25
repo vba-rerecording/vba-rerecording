@@ -27,6 +27,7 @@
 #include "Port.h"
 #include "SDL.h"
 #include "debugger.h"
+#include "version.h"
 #include "gba/GBA.h"
 #include "gba/GBAGlobals.h"
 #include "gba/GBAGfx.h"
@@ -2086,7 +2087,7 @@ void file_run()
 
 int main(int argc, char **argv)
 {
-  fprintf(stderr, "VisualBoyAdvance Rerecording version %s [SDL]\n", VERSION);
+  fprintf(stderr, "%s [SDL]\n", VBA_NAME_AND_VERSION);
   // Immediately store the current working directory so we can use it later
   if(!GETCWD(originalWorkingDirectory, 2048)) {
     fprintf(stderr, "Error while storing the current working directory\n");
@@ -3056,14 +3057,20 @@ int systemScreenCapture(int a)
     if(captureDir[0])
       sprintf(buffer, "%s/%s%02d.bmp", captureDir, sdlGetFilename(filename), a);
     else
-      sprintf(buffer, "%s/%s%02d.bmp", originalWorkingDirectory, filename, a);
+      if(filename[0] != '/')
+        sprintf(buffer, "%s/%s%02d.bmp", originalWorkingDirectory, filename, a);
+      else
+        sprintf(buffer, "%s%02d.bmp", filename, a);
 
     theEmulator.emuWriteBMP(buffer);
   } else {
     if(captureDir[0])
       sprintf(buffer, "%s/%s%02d.png", captureDir, sdlGetFilename(filename), a);
     else
-      sprintf(buffer, "%s/%s%02d.png", originalWorkingDirectory, filename, a);
+      if(filename[0] != '/')
+        sprintf(buffer, "%s/%s%02d.png", originalWorkingDirectory, filename, a);
+      else
+        sprintf(buffer, "%s%02d.bmp", filename, a);
     theEmulator.emuWritePNG(buffer);
   }
 

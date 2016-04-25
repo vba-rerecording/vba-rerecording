@@ -23,11 +23,47 @@ find_package ( BISON REQUIRED )
 find_package ( FLEX REQUIRED )
 find_package ( Gettext REQUIRED )
 find_package ( Lua51  REQUIRED )
+# We will extract information from git for versioning if we are
+# in the git repository. Otherwise we will assume the information
+# in version.h to be accurately describing the distributed code
+find_package ( Git 1.7.10 )
 
-# Version number
-IF( NOT VERSION )
-    SET( VERSION "v24-git" )
-ENDIF( NOT VERSION )
+# We assume not be in a repo
+SET(IS_REPO FALSE)
+
+# Now if possible update it to the actual value
+IF(GIT_FOUND)
+  execute_process(
+    COMMAND ${GIT_EXECUTABLE} rev-parse --git-dir
+    RESULT_VARIABLE REPO_R
+  )
+  IF(NOT REPO_R)
+#    set(IS_REPO TRUE)
+  ENDIF(NOT REPO_R)
+ENDIF(GIT_FOUND)
+# Check if we are in a git repository
+IF(IS_REPO)
+  # Get the short commit hash of the HEAD
+  add_custom_target(
+    git_version_header
+    mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/gen
+    COMMAND echo "#ifndef GIT_VERSION_H" > ${CMAKE_CURRENT_BINARY_DIR}/gen/git_version.h
+    COMMAND echo "#define GIT_VERSION_H" >> ${CMAKE_CURRENT_BINARY_DIR}/gen/git_version.h
+    COMMAND echo -n "#define GIT_COMMIT \"" >> ${CMAKE_CURRENT_BINARY_DIR}/gen/git_version.h
+    COMMAND sh -c "echo `${GIT_EXECUTABLE} describe --exact-match HEAD 2>/dev/null || ${GIT_EXECUTABLE} rev-parse --short HEAD`\\\" >> ${CMAKE_CURRENT_BINARY_DIR}/gen/git_version.h"
+    COMMAND echo "#endif" >> gen/git_version.h
+    COMMENT "Generating git version info"
+    VERBATIM)
+ELSE(IS_REPO)
+  add_custom_target(
+    git_version_header
+    mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/gen
+    COMMAND echo "#ifndef GIT_VERSION_H" > ${CMAKE_CURRENT_BINARY_DIR}/gen/git_version.h
+	COMMAND echo "#define GIT_VERSION_H" >> ${CMAKE_CURRENT_BINARY_DIR}/gen/git_version.h
+	COMMAND echo "#endif" >> ${CMAKE_CURRENT_BINARY_DIR}/gen/git_version.h
+    COMMENT "Generating git version info"
+    VERBATIM)
+ENDIF(IS_REPO)
 
 # This is taken from vba-m's file
 # TODO: Figure out why SDLMain.m is a problem.
@@ -75,17 +111,25 @@ IF( NOT SYSCONFDIR )
 ENDIF( NOT SYSCONFDIR )
 
 # C defines
-ADD_DEFINITIONS (-DHAVE_NETINET_IN_H -DHAVE_ARPA_INET_H -DHAVE_ZLIB_H -DFINAL_VERSION -DSDL -DSYSCONFDIR="${SYSCONFDIR}")
+ADD_DEFINITIONS (-DHAVE_NETINET_IN_H -DHAVE_ARPA_INET_H -DHAVE_ZLIB_H -DSDL -DSYSCONFDIR="${SYSCONFDIR}")
 
-ADD_DEFINITIONS (-DVERSION="${VERSION}" -DPKGDATADIR="${PKGDATADIR}" -DPACKAGE="vba-rerecording" -DUSE_EXTERNAL_LUA)
+SET( CMAKE_C_FLAGS_DEBUG "-O3 -g -Wall")
+SET( CMAKE_CXX_FLAGS_DEBUG "-O3 g -Wall")
+SET( CMAKE_C_FLAGS_RELEASE "-O3")
+SET( CMAKE_CXX_FLAGS_RELEASE "-O3")
+
+# People who build releases should know to change the configuration
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DPUBLIC_RELEASE")
+
+# TODO: FINAL_VERSION Should really be in the default flags
+# but it disables some debug paths. So a toggle should be
+# added to be able to enable it for specific debug builds
+ADD_DEFINITIONS ( -DFINAL_VERSION -DHAVE_GIT_VERSION_H -DPKGDATADIR="${PKGDATADIR}" -DPACKAGE="vba-rerecording" -DUSE_EXTERNAL_LUA)
 
 # The ASM core is disabled by default because we don't know on which platform we are
 IF( NOT USE_ASM_CORE )
     ADD_DEFINITIONS (-DC_CORE)
 ENDIF( NOT USE_ASM_CORE )
-
-SET( CMAKE_C_FLAGS "-O3 -Wall")
-SET( CMAKE_CXX_FLAGS "-O3 -Wall")
 
 SET(SRC_COMMON
     src/common/lua-engine.cpp
@@ -181,6 +225,8 @@ SET(SRC_GTK
 
 INCLUDE_DIRECTORIES(
     src
+    # This will contain all the generated dependencies
+    ${CMAKE_CURRENT_BINARY_DIR}/gen
     ${ZLIB_INCLUDE_DIR}
     ${PNG_INCLUDE_DIR}
     ${SDL_INCLUDE_DIR}
@@ -239,6 +285,7 @@ IF( CAN_BUILD_VBARR )
         vba-rr
         ${SRC_SDL}
     )
+    add_dependencies(vba-rr git_version_header)
 
     TARGET_LINK_LIBRARIES (
         vba-rr
@@ -264,10 +311,11 @@ IF( CAN_BUILD_GVBARR )
       stock_vba_wm_64  ${CMAKE_CURRENT_SOURCE_DIR}/src/gtk/images/stock-vba-wm-64.png
     )
 
-    add_custom_command(OUTPUT images/vba-wm-pixbufs.h
-                   PRE_BUILD
-                 COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/gen/images
-                 COMMAND gdk-pixbuf-csource --raw --build-list ${VBA_WM_VARIABLES} > ${CMAKE_CURRENT_BINARY_DIR}/gen/images/vba-wm-pixbufs.h)
+    add_custom_command(
+      OUTPUT images/vba-wm-pixbufs.h
+      COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/gen/images
+      COMMAND gdk-pixbuf-csource --raw --build-list ${VBA_WM_VARIABLES} > ${CMAKE_CURRENT_BINARY_DIR}/gen/images/vba-wm-pixbufs.h
+    )
 
     ADD_EXECUTABLE (
         gvba-rr
@@ -277,10 +325,7 @@ IF( CAN_BUILD_GVBARR )
         images/vba-wm-pixbufs.h
     )
 
-    target_include_directories(
-      gvba-rr
-      PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/gen
-    )
+    add_dependencies(gvba-rr git_version_header)
 
     set_property(
       TARGET
