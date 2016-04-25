@@ -79,21 +79,22 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,90,102,50,14,WS_GROUP
 END
 
-IDD_ABOUT DIALOGEX 0, 0, 165, 109
+IDD_ABOUT DIALOGEX 0, 0, 187, 122
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About VBA rerecording"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,56,88,50,14
-    ICON            IDI_ICON,IDC_STATIC,5,12,21,20
-    CTEXT           "VisualBoyAdvance Emulator",IDC_STATIC,14,7,134,8
-    CTEXT           "Copyright (c) 2004 Forgotten and the VBA team",IDC_STATIC,7,35,151,8
-    CTEXT           "http://code.google.com/p/vba-rerecording/",IDC_URL,7,55,151,8
-    CTEXT           "Contribution by Costis",IDC_STATIC,30,45,102,8
-    CTEXT           "Version",IDC_STATIC,46,16,70,8
-    CTEXT           "",IDC_VERSION,36,25,98,8
-    CTEXT           "Re-recording additions by VBA-rr team",IDC_STATIC,14,66,136,8
-    LTEXT           "v24.1 by TPP Devs",IDC_STATIC,50,77,63,8
+    DEFPUSHBUTTON   "OK",IDOK,68,101,50,14
+    ICON            IDI_ICON,IDC_STATIC,7,7,12,11
+    CTEXT           "VisualBoyAdvance Re-recording",IDC_STATIC,29,7,134,8
+    CTEXT           "Copyright (c) 2004 Forgotten and the VBA team",IDC_STATIC,7,35,173,8
+    CTEXT           "https://github.com/vba-rerecording/vba-rerecording",IDC_URL,7,84,173,8
+    CTEXT           "Contribution by Costis",IDC_STATIC,37,45,102,8
+    CTEXT           "Version",IDC_STATIC,60,15,70,8
+    CTEXT           "",IDC_VERSION,47,24,98,8
+    CTEXT           "Re-recording additions by VBA-rr team",IDC_STATIC,20,54,136,8
+    LTEXT           "Various Fixes by TPP Devs",IDC_STATIC,48,64,85,8
+    LTEXT           "Linux build and more sniperrifle2004",IDC_STATIC,36,75,113,8
 END
 
 IDD_DIRECTORIES DIALOGEX 0, 0, 284, 260
@@ -1290,9 +1291,9 @@ BEGIN
     IDD_ABOUT, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 158
+        RIGHTMARGIN, 180
         TOPMARGIN, 7
-        BOTTOMMARGIN, 102
+        BOTTOMMARGIN, 115
     END
 
     IDD_DIRECTORIES, DIALOG
@@ -2361,7 +2362,18 @@ END
 
 IDD_ABOUT AFX_DIALOG_LAYOUT
 BEGIN
-    0
+    0,
+    0, 0, 0, 0,
+    0, 0, 100, 100,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0
 END
 
 

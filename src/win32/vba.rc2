@@ -24,7 +24,7 @@ BEGIN
         BEGIN
             VALUE "Comments", "VBA-RR comes with NO WARRANTY. Use it at your own risk."
             VALUE "CompanyName", VBA_VERSIONINFO_ORGANIZATION
-            VALUE "FileDescription", "VisualBoyAdvance-ReRecording Emulator"
+            VALUE "FileDescription", "VisualBoyAdvance Re-recording Emulator"
             VALUE "FileVersion", VBA_VERSIONINFO_STRFILEVER
             VALUE "InternalName", "VBA-RR"
             VALUE "LegalCopyright", VBA_VERSIONINFO_STRCOPYRIGHT
