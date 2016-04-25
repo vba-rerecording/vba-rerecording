@@ -38,7 +38,7 @@ IF(GIT_FOUND)
     RESULT_VARIABLE REPO_R
   )
   IF(NOT REPO_R)
-#    set(IS_REPO TRUE)
+    set(IS_REPO TRUE)
   ENDIF(NOT REPO_R)
 ENDIF(GIT_FOUND)
 # Check if we are in a git repository
