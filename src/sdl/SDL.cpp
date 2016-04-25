@@ -817,10 +817,6 @@ void sdlCheckDirectory(char *dir)
   }
 }
 
-// FIXME: I see a lot of calls to this
-// function, but always on filename, which
-// is already the baseName curtosy of
-// utilGetBaseName
 char *sdlGetFilename(char *name)
 {
   static char filebuffer[2048];
@@ -1342,7 +1338,13 @@ void sdlWriteState(int num)
     sprintf(stateName, "%s/%s%d.sgm", saveDir, sdlGetFilename(filename),
             num+1);
   else
-    sprintf(stateName,"%s/%s%d.sgm", originalWorkingDirectory, filename, num+1);
+    // If the directoryis relative, prepend the originalWorkingDirectory
+    if (filename[0] != '/')
+      sprintf(stateName,"%s/%s%d.sgm", originalWorkingDirectory, filename, num+1);
+    // Otherwise we won't be bothered by potentional chdirs (I am looking
+    // at you lua-engine)
+    else
+      sprintf(stateName,"%s%d.sgm", filename, num+1);
   if(theEmulator.emuWriteState)
     theEmulator.emuWriteState(stateName);
   sprintf(stateName, "Wrote state %d", num+1);
@@ -1357,7 +1359,10 @@ void sdlReadState(int num)
     sprintf(stateName, "%s/%s%d.sgm", saveDir, sdlGetFilename(filename),
             num+1);
   else
-    sprintf(stateName,"%s/%s%d.sgm", originalWorkingDirectory, filename, num+1);
+    if (filename[0] != '/')
+      sprintf(stateName,"%s/%s%d.sgm", originalWorkingDirectory, filename, num+1);
+    else
+      sprintf(stateName,"%s%d.sgm", filename, num+1);
 
   if(theEmulator.emuReadState)
     theEmulator.emuReadState(stateName);
@@ -1373,7 +1378,11 @@ void sdlWriteBattery()
   if(batteryDir[0])
     sprintf(buffer, "%s/%s.sav", batteryDir, sdlGetFilename(filename));
   else
-    sprintf(buffer, "%s/%s.sav", originalWorkingDirectory, filename);
+    if (filename[0] != '/')
+      sprintf(buffer, "%s/%s.sav", originalWorkingDirectory, filename);
+    else
+      sprintf(buffer, "%s.sav", filename);
+
 
   theEmulator.emuWriteBattery(buffer);
 
@@ -1387,7 +1396,10 @@ void sdlReadBattery()
   if(batteryDir[0])
     sprintf(buffer, "%s/%s.sav", batteryDir, sdlGetFilename(filename));
   else
-    sprintf(buffer, "%s/%s.sav", originalWorkingDirectory, filename);
+    if (filename[0] != '/')
+      sprintf(buffer, "%s/%s.sav", originalWorkingDirectory, filename);
+    else
+      sprintf(buffer, "%s.sav", filename);
 
   bool res = false;
 
@@ -1990,6 +2002,9 @@ static char *szFile;
 
 void file_run()
 {
+    // Strips an optional .gz extension
+    // Which naturally is not at all what is usually
+    // meant by basename
     utilGetBaseName(szFile, filename);
     char *p = strrchr(filename, '.');
 
