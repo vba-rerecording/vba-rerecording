@@ -462,13 +462,16 @@ static int print(lua_State *L)
 	 if (s == NULL)
 		 return luaL_error(L, LUA_QL("tostring") " must return a string to "
 													LUA_QL("print"));
-	 if(info_print)
+	 if (info_print) {
+		 if (i > 1) info_print(info_uid, "\t");
 	 	 info_print(info_uid, s);
-	 else {
+	 } else {
 	 	 if (i>1) fputs("\t", stdout);
 	 	 fputs(s, stdout);
 	 }
-	 if(!info_print)
+	 if (info_print)
+	   info_print(info_uid, "\n");
+	 else
 	   fputs("\n", stdout);
 	 lua_pop(L, 1);  /* pop result */
 	}
