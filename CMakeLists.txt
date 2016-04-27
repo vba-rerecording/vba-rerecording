@@ -31,6 +31,10 @@ find_package ( Git 1.7.10 )
 # We assume not be in a repo
 SET(IS_REPO FALSE)
 
+# This will contain all the generated dependencies
+SET(GENERATED_SOURCES_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
+execute_process(COMMAND mkdir -pv ${GENERATED_SOURCES_DIR})
+
 # Now if possible update it to the actual value
 IF(GIT_FOUND)
   execute_process(
@@ -46,8 +50,7 @@ IF(IS_REPO)
   # Get the short commit hash of the HEAD
   add_custom_target(
     git_version_header
-    mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/gen
-    COMMAND echo "#ifndef GIT_VERSION_H" > ${CMAKE_CURRENT_BINARY_DIR}/gen/git_version.h
+    echo "#ifndef GIT_VERSION_H" > ${CMAKE_CURRENT_BINARY_DIR}/gen/git_version.h
     COMMAND echo "#define GIT_VERSION_H" >> ${CMAKE_CURRENT_BINARY_DIR}/gen/git_version.h
     COMMAND echo -n "#define GIT_COMMIT \"" >> ${CMAKE_CURRENT_BINARY_DIR}/gen/git_version.h
     COMMAND sh -c "echo `${GIT_EXECUTABLE} describe --exact-match HEAD 2>/dev/null || ${GIT_EXECUTABLE} rev-parse --short HEAD`\\\" >> ${CMAKE_CURRENT_BINARY_DIR}/gen/git_version.h"
@@ -57,8 +60,7 @@ IF(IS_REPO)
 ELSE(IS_REPO)
   add_custom_target(
     git_version_header
-    mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/gen
-    COMMAND echo "#ifndef GIT_VERSION_H" > ${CMAKE_CURRENT_BINARY_DIR}/gen/git_version.h
+    echo "#ifndef GIT_VERSION_H" > ${CMAKE_CURRENT_BINARY_DIR}/gen/git_version.h
 	COMMAND echo "#define GIT_VERSION_H" >> ${CMAKE_CURRENT_BINARY_DIR}/gen/git_version.h
 	COMMAND echo "#endif" >> ${CMAKE_CURRENT_BINARY_DIR}/gen/git_version.h
     COMMENT "Generating git version info"
@@ -184,8 +186,8 @@ SET(SRC_APU
     src/apu/Blip_Buffer.cpp
 )
 
-BISON_TARGET(EXPR_PARSER src/sdl/expr.ypp ${CMAKE_CURRENT_BINARY_DIR}/expr.cpp)
-FLEX_TARGET(EXPR_LEXER src/sdl/expr-lex.lpp  ${CMAKE_CURRENT_BINARY_DIR}/expr-lex.cpp)
+BISON_TARGET(EXPR_PARSER src/sdl/expr.ypp ${GENERATED_SOURCES_DIR}/expr.cpp)
+FLEX_TARGET(EXPR_LEXER src/sdl/expr-lex.lpp  ${GENERATED_SOURCES_DIR}/expr-lex.cpp)
 ADD_FLEX_BISON_DEPENDENCY(EXPR_LEXER EXPR_PARSER)
 
 SET(SRC_SDL
@@ -225,8 +227,7 @@ SET(SRC_GTK
 
 INCLUDE_DIRECTORIES(
     src
-    # This will contain all the generated dependencies
-    ${CMAKE_CURRENT_BINARY_DIR}/gen
+    ${GENERATED_SOURCES_DIR}
     ${ZLIB_INCLUDE_DIR}
     ${PNG_INCLUDE_DIR}
     ${SDL_INCLUDE_DIR}
@@ -313,8 +314,8 @@ IF( CAN_BUILD_GVBARR )
 
     add_custom_command(
       OUTPUT images/vba-wm-pixbufs.h
-      COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/gen/images
-      COMMAND gdk-pixbuf-csource --raw --build-list ${VBA_WM_VARIABLES} > ${CMAKE_CURRENT_BINARY_DIR}/gen/images/vba-wm-pixbufs.h
+      COMMAND mkdir -pv ${GENERATED_SOURCES_DIR}/images
+      COMMAND gdk-pixbuf-csource --raw --build-list ${VBA_WM_VARIABLES} > ${GENERATED_SOURCES_DIR}/images/vba-wm-pixbufs.h
     )
 
     ADD_EXECUTABLE (
