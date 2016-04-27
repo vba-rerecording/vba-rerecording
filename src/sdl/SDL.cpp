@@ -850,13 +850,14 @@ FILE *sdlFindFile(const char *name)
   char path[2048];
 
 #ifdef WIN32
+//FIXME: This is currently unreachable
 #define PATH_SEP ";"
 #define FILE_SEP '\\'
 #define EXE_NAME "VisualBoyAdvance-SDL.exe"
 #else // ! WIN32
 #define PATH_SEP ":"
 #define FILE_SEP '/'
-#define EXE_NAME "vbarr"
+#define EXE_NAME "vba-rr"
 #endif // ! WIN32
 
   fprintf(stderr, "Searching for file %s\n", name);
@@ -897,11 +898,13 @@ FILE *sdlFindFile(const char *name)
       return f;
 #endif // ! WIN32
 
-  // FIXME: Is always searching for files in PATH/executable location a good idea?
-  // It could potentially pick up things it is not intented to pick up. Executable
-  // location is understandable given a standalone context, but the PATH?
   if(!strchr(arg0, '/') &&
      !strchr(arg0, '\\')) {
+    // The process does not contain a path seperator. So looking
+    // for a path in arg0 is useless. Therefor we will Search
+    // in the path.
+    // FIXME: This is not a good path to hit on uniz so
+    // we should ensure we do not and raise a warning if we do
     char *path = getenv("PATH");
 
     if(path != NULL) {
@@ -1129,6 +1132,8 @@ void sdlReadPreferences(FILE *f)
       switch(soundQuality) {
       case 1: break;
       default:
+        // FIXME: This seems to contradict evidence found in the win32 build
+        // and the sound core(s)...
         fprintf(stderr, "The rerecording version will run only sound at highest quality. Defaulting to 44.1 KHz\n");
         soundQuality = 1;
         break;
@@ -1200,7 +1205,7 @@ void sdlReadPreferences(FILE *f)
 
 void sdlReadPreferences()
 {
-  FILE *f = sdlFindFile("VisualBoyAdvance.cfg");
+  FILE *f = sdlFindFile("vba-rr.cfg");
 
   if(f == NULL) {
     fprintf(stderr, "Configuration file NOT FOUND (using defaults)\n");
@@ -2102,7 +2107,11 @@ void file_run()
 
 int main(int argc, char **argv)
 {
+  // Why print to stderr?
   fprintf(stderr, "%s [SDL]\n", VBA_NAME_AND_VERSION);
+#ifdef VBA_FEATURE_STRING
+  fprintf(stderr, "With %s", VBA_FEATURE_STRING);
+#endif
   // Immediately store the current working directory so we can use it later
   if(!GETCWD(originalWorkingDirectory, 2048)) {
     fprintf(stderr, "Error while storing the current working directory\n");
