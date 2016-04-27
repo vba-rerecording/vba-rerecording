@@ -133,7 +133,8 @@
       <MinimalRebuild>true</MinimalRebuild>
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <UndefinePreprocessorDefinitions>USE_GB_CORE_V7;USE_GBA_CORE_V7</UndefinePreprocessorDefinitions>
+      <UndefinePreprocessorDefinitions>
+      </UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>directx/d3d9.lib;directx/d3dx9.lib;directx/DxErr.lib;wsock32.lib;directx/ddraw.lib;directx/dxguid.lib;winmm.lib;directx/dinput8.lib;vfw32.lib;opengl32.lib;nafxcw.lib;libcmt.lib;lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -223,7 +224,8 @@
       <StringPooling>true</StringPooling>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>true</MinimalRebuild>
-      <UndefinePreprocessorDefinitions>USE_GB_CORE_V7;USE_GBA_CORE_V7</UndefinePreprocessorDefinitions>
+      <UndefinePreprocessorDefinitions>
+      </UndefinePreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalDependencies>directx/d3d9.lib;directx/d3dx9.lib;directx/DxErr.lib;wsock32.lib;directx/ddraw.lib;directx/dxguid.lib;winmm.lib;directx/dinput8.lib;vfw32.lib;opengl32.lib;nafxcwd.lib;libcmtd.lib;lua51.lib;%(AdditionalDependencies)</AdditionalDependencies>
