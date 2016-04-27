@@ -12,5 +12,5 @@ and more or less working SDL based cli and gtk2+ interfaces.
 
 Right now the focus is at getting the SDL and gtk2 interfaces
 up to par and deprecating the old V7 (VisualBoyAdvance 1.7.2) core
-code in favor of the V8 (VisualBoyAdvance 1.8.0-some-version) core
-code. Contributions of any kind are welcome however.
+code in favor of the V8 (According to the history based on some
+version of VBA-M) core code. Contributions of any kind are welcome however.
