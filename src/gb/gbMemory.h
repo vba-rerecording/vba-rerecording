@@ -44,7 +44,7 @@ struct mapperMBC3
 	int32 mapperLHours;
 	int32 mapperLDays;
 	int32 mapperLControl;
-	u32	  mapperLastTime;
+	time_t	  mapperLastTime;
 };
 
 struct mapperMBC5
