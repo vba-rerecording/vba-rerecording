@@ -1419,6 +1419,53 @@ void sdlReadBattery()
 #define MOD_NOALT   (KMOD_CTRL|KMOD_SHIFT|KMOD_META)
 #define MOD_NOSHIFT (KMOD_CTRL|KMOD_ALT|KMOD_META)
 
+u32 maskFromButton(int button) {
+  // Safe default
+  u32 mask = 0;
+  switch(button) {
+    case KEY_BUTTON_A:
+      mask = BUTTON_MASK_A;
+      break;
+    case KEY_BUTTON_B:
+      mask = BUTTON_MASK_B;
+      break;
+    case KEY_UP:
+      mask = BUTTON_MASK_UP;
+      break;
+    case KEY_DOWN:
+      mask = BUTTON_MASK_DOWN;
+      break;
+    case KEY_LEFT:
+      mask = BUTTON_MASK_LEFT;
+      break;
+    case KEY_RIGHT:
+      mask = BUTTON_MASK_RIGHT;
+      break;
+    case KEY_BUTTON_L:
+      mask = BUTTON_MASK_L;
+      break;
+    case KEY_BUTTON_R:
+      mask = BUTTON_MASK_R;
+      break;
+    case KEY_BUTTON_START:
+      mask = BUTTON_MASK_START;
+      break;
+    case KEY_BUTTON_SELECT:
+      mask = BUTTON_MASK_SELECT;
+      break;
+    case KEY_BUTTON_SPEED:
+      mask = BUTTON_MASK_SPEED;
+      break;
+    case KEY_BUTTON_CAPTURE:
+      mask = BUTTON_MASK_CAPTURE;
+      break;
+    default:
+      fprintf(stderr, "Unrecognized button passed to maskFromButton: %d", button);
+      break;
+  }
+  return mask;
+}
+
 void sdlUpdateKey(int key, bool down)
 {
   int i;
@@ -1426,43 +1473,7 @@ void sdlUpdateKey(int key, bool down)
     for(i = 0 ; i < 12; i++) {
       if((joypad[j][i] & 0xf000) == 0) {
         if(key == joypad[j][i]) {
-          // Safe default
-          u16 mask = 0;
-          switch(i) {
-            case KEY_BUTTON_A:
-              mask = BUTTON_MASK_A;
-              break;
-            case KEY_BUTTON_B:
-              mask = BUTTON_MASK_B;
-              break;
-            case KEY_UP:
-              mask = BUTTON_MASK_UP;
-              break;
-            case KEY_DOWN:
-              mask = BUTTON_MASK_DOWN;
-              break;
-            case KEY_LEFT:
-              mask = BUTTON_MASK_LEFT;
-              break;
-            case KEY_RIGHT:
-              mask = BUTTON_MASK_RIGHT;
-              break;
-            case KEY_BUTTON_L:
-              mask = BUTTON_MASK_L;
-              break;
-            case KEY_BUTTON_R:
-              mask = BUTTON_MASK_R;
-              break;
-            case KEY_BUTTON_START:
-              mask = BUTTON_MASK_START;
-              break;
-            case KEY_BUTTON_SELECT:
-              mask = BUTTON_MASK_SELECT;
-              break;
-            default:
-              // TODO: Error handling/reporting
-              break;
-          }
+          u32 mask = maskFromButton(i);
           if (down) currentButtons[j] |= mask;
           else currentButtons[j] &= ~mask;
         }
@@ -1488,10 +1499,10 @@ void sdlUpdateJoyButton(int which,
       int b = joypad[j][i] & 0xfff;
       if(dev) {
         dev--;
-
         if((dev == which) && (b >= 128) && (b == (button+128))) {
-          if (pressed) currentButtons[j] |= 1<<i;
-          else currentButtons[j] &= ~(1<<i);
+          u32 mask = maskFromButton(i);
+          if (pressed) currentButtons[j] |= mask;
+          else currentButtons[j] &= ~(mask);
         }
       }
     }
@@ -1538,8 +1549,9 @@ void sdlUpdateJoyHat(int which,
             v = value & SDL_HAT_LEFT;
             break;
           }
-          if (v) currentButtons[j] |= 1<<i;
-          else currentButtons[j] &= ~(1<<i);
+          u32 mask = maskFromButton(i);
+          if (v) currentButtons[j] |= mask;
+          else currentButtons[j] &= ~(mask);
         }
       }
     }
@@ -1586,14 +1598,15 @@ void sdlUpdateJoyAxis(int which,
         dev--;
 
         if((dev == which) && (a < 32) && ((a>>1) == axis)) {
-	  //I have no idea what this does, is this reimplementation correct? --Felipe
-	  if (value>16384) {
-	  	if (a&1) currentButtons[j] |= 1<<i;
-	  	else currentButtons[j] &= ~(1<<i);
-	  }
-          else if (value<16384){
-          	if (a&1) currentButtons[j] &= ~(1<<i);
-          	else currentButtons[j] |= 1<<i;
+      	  if (value>16384) {
+            u32 mask = maskFromButton(i);
+      	  	if (a&1) currentButtons[j] |= mask;
+      	  	else currentButtons[j] &= ~(mask);
+      	  }
+          else if (value<-16384){
+            u32 mask = maskFromButton(i);
+          	if (a&1) currentButtons[j] &= ~(mask);
+          	else currentButtons[j] |= mask;
           }
         }
       }
