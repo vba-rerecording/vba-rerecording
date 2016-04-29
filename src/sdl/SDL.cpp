@@ -204,7 +204,7 @@ int frameskipadjust = 0;
 int showRenderedFrames = 0;
 int renderedFrames = 0;
 
-int throttle = 0;
+int throttle = 100;
 u32 throttleLastTime = 0;
 u32 autoFrameSkipLastTime = 0;
 
