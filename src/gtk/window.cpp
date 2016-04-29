@@ -115,7 +115,7 @@ Window::Window(GtkWindow * _pstWindow, const Glib::RefPtr<Xml> & _poXml) :
   //
   vInitConfig();
 
-  m_sUserDataDir = Glib::get_home_dir() + "/.gvba";
+  m_sUserDataDir = Glib::get_home_dir() + "/.gvba-rr";
   m_sConfigFile  = m_sUserDataDir + "/config";
 
   if (! Glib::file_test(m_sUserDataDir, Glib::FILE_TEST_EXISTS))

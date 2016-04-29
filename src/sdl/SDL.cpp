@@ -3107,12 +3107,13 @@ int systemScreenCapture(int a)
       if(filename[0] != '/')
         sprintf(buffer, "%s/%s%02d.png", originalWorkingDirectory, filename, a);
       else
-        sprintf(buffer, "%s%02d.bmp", filename, a);
+        sprintf(buffer, "%s%02d.png", filename, a);
     theEmulator.emuWritePNG(buffer);
   }
 
   systemScreenMessage("Screen capture");
-  return a;
+  // Next capture on next index
+  return (a + 1);
 }
 
 void soundCallback(void *,u8 *stream,int len){}

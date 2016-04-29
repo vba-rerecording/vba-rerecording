@@ -23,7 +23,7 @@ int emulating = 0;
 u8 *bios = NULL;
 u8 *pix	 = NULL;
 
-u16	  currentButtons[4] = { 0, 0, 0, 0 };
+u32	  currentButtons[4] = { 0, 0, 0, 0 };
 u16	  lastButtons[4] = { 0, 0, 0, 0 };
 u16	  nextButtons[4] = { 0, 0, 0, 0 };
 

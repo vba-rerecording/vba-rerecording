@@ -64,7 +64,9 @@ extern int emulating;
 extern u8 *bios;
 extern u8 *pix;
 
-extern u16 currentButtons[4];
+// Needs to be u32 to accomodation capture and speed
+// buttons
+extern u32 currentButtons[4];
 extern u16 lastButtons[4];
 extern u16 nextButtons[4];
 
