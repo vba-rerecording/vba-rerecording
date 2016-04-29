@@ -24,8 +24,8 @@ u8 *bios = NULL;
 u8 *pix	 = NULL;
 
 u32	  currentButtons[4] = { 0, 0, 0, 0 };
-u16	  lastButtons[4] = { 0, 0, 0, 0 };
-u16	  nextButtons[4] = { 0, 0, 0, 0 };
+u32	  lastButtons[4] = { 0, 0, 0, 0 };
+u32	  nextButtons[4] = { 0, 0, 0, 0 };
 
 int32 sensorX  = 0;
 int32 sensorY  = 0;
