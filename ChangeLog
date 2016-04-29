@@ -1,4 +1,99 @@
-TODO: Repair this log.
+
+---vba-rerecording v24.4alpha1--
+
+2016-04-29 f93dadc Sniperrifle2004 - Update cmake file to also install the config
+2016-04-29 1335a5d Sniperrifle2004 - Improve documentation on throttle to valid hex
+2016-04-29 60ec1b9 Sniperrifle2004 - Default to 100% throttle
+2016-04-29 d03d3cf Sniperrifle2004 - Also change the last and next button type
+2016-04-29 b96ebca Sniperrifle2004 - Fix screen capture
+2016-04-29 589cb38 Sniperrifle2004 - Fix default config file name and joysticks
+2016-04-28 01b0245 Sniperrifle2004 - Use platform dependent time_t
+2016-04-28 602d6f5 Sniperrifle2004 - Remove a pad that should never have been added
+2016-04-27 230a3f4 Sniperrifle2004 - Add VBA feature string and minor fixes
+2016-04-27 76e4a7c Sniperrifle2004 - Improve generated sources directory
+2016-04-27 dbe9649 Sniperrifle2004 - Update README
+2016-04-27 3f0b206 Sniperrifle2004 - Create a seperate project for the V7 build
+2016-04-27 04af9b4 Sniperrifle2004 - Remove some svn stuff
+2016-04-27 9e77e0a Sniperrifle2004 - Also remove undefines from the C/C++ configuration
+2016-04-27 3b85cdf Sniperrifle2004 - Remove 2005/2008 solutions and projects
+2016-04-27 86961d2 Sniperrifle2004 - Remove the USELESS undefinition of V7 symbols
+2016-04-26 07dc157 Sniperrifle2004 - Print newlines and tab in the window too
+2016-04-26 6ef9440 Sniperrifle2004 - Add a readme that more describes the project
+2016-04-26 cffe13a Sniperrifle2004 - Adapt the visual studio project versioning
+2016-04-26 b8e0d55 Sniperrifle2004 - Change name to VisualBoyAdvance Re-recording
+2016-04-26 5c100ee Sniperrifle2004 - Use #pragma message instead of #warning for V7
+2016-04-25 213342f Sniperrifle2004 - No longer set VBA_FEATURE_STRING in the version
+2016-04-25 e6a142d sniperrifle2004 - Properly pass -g to CXX
+2016-04-25 cc7f512 Sniperrifle2004 - Accidently disabled git versioning
+2016-04-25 004cb56 Sniperrifle2004 - Absolute ROM paths should now work again
+2016-04-25 5156584 Sniperrifle2004 - Fix some whitespace
+2016-04-25 9eb3ecb Sniperrifle2004 - Major changes to the build system for versioning
+2016-04-25 02a935e Sniperrifle2004 - Add a reminder about win32 building SDL and GTK
+2016-04-25 a82962c Sniperrifle2004 - Add a reminder about BKPT_SUPPORT
+2016-04-25 91553c2 Sniperrifle2004 - Add a fixme for use of a "dangerous" function
+2016-04-25 9b37b74 Sniperrifle2004 - Remove autotool build files
+2016-04-25 c62621e Sniperrifle2004 - Properly setup cmake
+2016-04-24 1212998 Sniperrifle2004 - I broke the varargs print function
+2016-04-24 4d9e45f Sniperrifle2004 - Fix the files written into the lua dir
+2016-04-23 39025d9 Sniperrifle2004 - Allow LUA to link to an external lua 5.1 version
+2016-04-23 300e2e9 Sniperrifle2004 - Actually honor the provided ipsname
+2016-04-22 2318f61 Sniperrifle2004 - Show that this is VisualBoyAdvance Rerecording
+2016-04-22 6144779 Sniperrifle2004 - Fix the default sound quality still set to 2 in SDL
+2016-04-22 81e0fe8 Sniperrifle2004 - Correctly "clear" the filter delta
+2016-04-22 68b5612 Sniperrifle2004 - Up events should disable joypad buttons not toggle
+2016-04-22 2c2760b Sniperrifle2004 - Fix the fourth joypad preference read
+2016-04-22 28a72e3 Sniperrifle2004 - More sensible order of checks
+2016-04-22 bc35d5c Sniperrifle2004 - Resume emulation after loading lua script
+2016-04-22 4ce66f0 Sniperrifle2004 - Ensure the lua script is properly synced
+2016-04-22 4dab36b Sniperrifle2004 - Prefer string over malloc char *
+2016-04-22 efb58a1 Sniperrifle2004 - Add possibility to load a LUA script
+2016-04-22 89648f9 Sniperrifle2004 - Also use the new executable name in sdlFindFile
+2016-04-22 9a05761 Sniperrifle2004 - Change executable names in autotools chain
+2016-04-17 cc77f16 Sniperrifle2004 - Add ../src directory to include directories
+2016-04-17 586891a Sniperrifle2004 - Initial attempt at a cmake build
+2016-04-17 9e6913f Sniperrifle2004 - Allow some breathing room for glade file
+2016-04-17 c539796 Sniperrifle2004 - The gtk build now succeeds, but I can't test
+2016-04-17 039d94a Sniperrifle2004 - Also update the gbMemory entry for (v)ram banks
+2016-04-17 36aa7bd Sniperrifle2004 - Fix a bug where hdma would run to long
+2016-04-09 3268354 Sniperrifle2004 - SDL was still displaying all button presses
+2016-04-09 476b9cd Sniperrifle2004 - Fix the SDL display always showing frame counter
+2016-04-09 7a2a29f Sniperrifle2004 - Made a lot of progress with the gtk build
+2016-04-09 9c1cd9a Sniperrifle2004 - Temporarily disable TempEmu
+2016-04-09 31f374c Sniperrifle2004 - Fix mismapped inputs
+2016-04-08 9a78183 Sniperrifle2004 - Yes! VisualBoyAdvance now builds.
+2016-04-08 d3d608c Sniperrifle2004 - Fix a lot of linker errors
+2016-04-08 5348465 Sniperrifle2004 - SDL log function moved into win32 code
+2016-04-08 e6642a2 Sniperrifle2004 - Fix some linker errors.
+2016-04-08 389d61a Sniperrifle2004 - BKPT_SUPPORT hides too much
+2016-04-08 b78bed1 Sniperrifle2004 - Update lexer and parser to build again
+2016-04-08 996b4dc Sniperrifle2004 - Fix some of the debugger build errors
+2016-04-07 1c54691 Sniperrifle2004 - parseDebug global was moved down to elf.cpp
+2016-04-07 483e8c9 Sniperrifle2004 - Well I found out what happened to dbgSignal
+2016-04-07 9f5a1cd Sniperrifle2004 - Fix more of the SDL build
+2016-04-06 578d1cd Sniperrifle2004 - Fix some of the build errors
+2016-04-05 381fb19 Pigu-A - More accurate and visible I/O map
+2016-04-04 b6a8e6a Sniperrifle2004 - Get most of the build working again
+
+---vba-rr v24.3--
+
+2016-01-30 9ec7d23 ProjectRevoTPP - 24.3 version bump
+2016-01-30 bda794f Pigu-A - Pad the RTC data saving by 4 bytes for VBA-M compatability
+2016-01-30 6d3ee05 Pigu-A - Fix gbReadBatteryFile() writing garbage to mapperLastTime
+
+---vba-rr v24.2 (pre-release)--
+
+2016-01-29 a31293f ProjectRevoTPP - RTC FIX
+2016-01-29 ea8f4cd ProjectRevoTPP - did I fix RTC saving?
+2016-01-17 06f3c60 Pigu-A - Remove svn0
+2016-04-04 e88fd1f Sniperrifle2004 - Fix more whitespace
+2016-01-17 94b6dfe Pigu-A - Wow Revo OneHand
+
+---vba-rr v24.1 (pre-release)--
+
+2016-01-14 5312a02 ProjectRevoTPP - fixed rSVBK mistake in V7 core GB.cpp
+
+
+---- OLD svn style changelog--
 
 ---VBA-rr v23--
 02-10-2010 aquanull - Finally fixed accelerator keys.
@@ -14,6 +109,7 @@ loop.
 11-12-2009 gochaism - Lua: changed joypad.set, it no longer adds input if the field value means false.
 
 VBA-rr V22 released November 8, 2009 - SVN 182
+TODO: Repair this log here.
 ??-??-???? ???????? - (missing log)
 
 ---VBA-rr V21+(interim)---
