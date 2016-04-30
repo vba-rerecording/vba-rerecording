@@ -52,7 +52,7 @@ u32 soundBufferIndex	= 0;
 
 u16	  soundFinalWave[1470];
 u16	  soundFrameSound[735 * 30 * 2]; // for avi logging
-int32 soundFrameSoundWritten = 0;
+size_t soundFrameSoundWritten = 0;
 
 bool tempSaveSafe	  = true;
 int	 tempSaveID		  = 0;

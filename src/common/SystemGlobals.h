@@ -96,7 +96,7 @@ extern u32 soundBufferIndex;
 
 extern u16	 soundFinalWave[1470];
 extern u16	 soundFrameSound[735 * 30 * 2];
-extern int32 soundFrameSoundWritten;
+extern size_t soundFrameSoundWritten;
 
 extern bool tempSaveSafe;
 extern int	tempSaveID;

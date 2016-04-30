@@ -71,7 +71,10 @@ static u16 initialInputs[4] = { 0 };
 static bool resetSignaled	  = false;
 static bool resetSignaledLast = false;
 
-static int prevEmulatorType, prevBorder, prevWinBorder, prevBorderAuto;
+static int prevEmulatorType;
+#if defined(WIN32) && !defined(SDL)
+static int prevBorder, prevWinBorder, prevBorderAuto;
+#endif
 
 // little-endian integer pop/push functions:
 static inline uint32 Pop32(const uint8 * &ptr)
@@ -743,9 +746,10 @@ int VBAMovieOpen(const char *filename, bool8 read_only)
 //	if (alreadyOpen)
 	change_movie_state(MOVIE_STATE_NONE);     // have to stop current movie before trying to re-open it
 
-	if (!(file = fopen(movie_filename, "rb+")))
-		if (!(file = fopen(movie_filename, "rb")))
-		{ loadingMovie = false; return MOVIE_FILE_NOT_FOUND; }
+	if (!(file = fopen(movie_filename, "rb+"))
+			&& !(file = fopen(movie_filename, "rb"))) {
+		 loadingMovie = false; return MOVIE_FILE_NOT_FOUND;
+  }
 	//else
 	//	movieReadOnly = 2; // we have to open the movie twice, no need to do this both times
 
@@ -779,11 +783,12 @@ int VBAMovieOpen(const char *filename, bool8 read_only)
 
 	// apparently this lseek is necessary
 	lseek(fn, Movie.header.offset_to_savestate, SEEK_SET);
-	if (!(stream = utilGzReopen(fn, "rb")))
-		if (!(stream = utilGzOpen(movie_filename, "rb")))
-		{ loadingMovie = false; return MOVIE_FILE_NOT_FOUND; }
-		else
-			fn = dup(fileno(file));
+	if (!(stream = utilGzReopen(fn, "rb"))
+		  && !(stream = utilGzOpen(movie_filename, "rb"))) {
+		loadingMovie = false; return MOVIE_FILE_NOT_FOUND;
+	}	else {
+		fn = dup(fileno(file));
+	}
 	// in case the above dup failed but opening the file normally doesn't fail
 
 	if (Movie.header.startFlags & MOVIE_START_FROM_SNAPSHOT)
@@ -817,11 +822,12 @@ int VBAMovieOpen(const char *filename, bool8 read_only)
 //		if(!Movie.readOnly || !(file = fopen(movie_filename, "rb"))) // try read-only if failed
 //			return MOVIE_FILE_NOT_FOUND;
 //	}
-	if (!(file = fopen(movie_filename, "rb+")))
-		if (!(file = fopen(movie_filename, "rb")))
-		{ loadingMovie = false; return MOVIE_FILE_NOT_FOUND; }
-		else
-			movieReadOnly = 2;
+	if (!(file = fopen(movie_filename, "rb+"))
+		  && !(file = fopen(movie_filename, "rb"))) {
+		loadingMovie = false; return MOVIE_FILE_NOT_FOUND;
+ 	}	else {
+		movieReadOnly = 2;
+	}
 
 	// recalculate length of movie from the file size
 	Movie.bytesPerFrame = get_movie_frame_size(Movie);
@@ -846,7 +852,6 @@ int VBAMovieOpen(const char *filename, bool8 read_only)
 	change_movie_state(MOVIE_STATE_PLAY);
 
 	char messageString[64] = "Movie ";
-	bool converted		   = false;
 	if (autoConvertMovieWhenPlaying)
 	{
 		int result = VBAMovieConvertCurrent();
@@ -1114,8 +1119,8 @@ void VBAUpdateButtonPressDisplay()
 	const static int  KeyOrder[] = {  5,  6,  4,  7,  0,  1,  9,  8,  3,  2, 12, 15, 13, 14, 11, 10 };
 
 	int which = 0;
-	uint16 currKeys = currentButtons[which];
-	uint16 nextKeys = nextButtons[which];
+	u32 currKeys = currentButtons[which];
+	u32 nextKeys = nextButtons[which];
 
 	const int  BufferSize = 64;
 	      char buffer[BufferSize] = "                    ";
@@ -1128,10 +1133,10 @@ void VBAUpdateButtonPressDisplay()
 	memset(grayList, 4, strnlen(buffer, BufferSize));
 	memset(colorList, 1, strnlen(buffer, BufferSize));
 
-	uint16	autoHeldKeys = eraseAll ? 0 : theApp.autoHold & BUTTON_REGULAR_RECORDING_MASK;
-	uint16	autoFireKeys = eraseAll ? 0 : (theApp.autoFire | theApp.autoFire2) & BUTTON_REGULAR_RECORDING_MASK;
-	uint16	pressedKeys	 = eraseAll ? 0 : currKeys;
-	uint16 &lastKeys     = lastButtons[which];
+	u32	autoHeldKeys = eraseAll ? 0 : theApp.autoHold & BUTTON_REGULAR_RECORDING_MASK;
+	u32	autoFireKeys = eraseAll ? 0 : (theApp.autoFire | theApp.autoFire2) & BUTTON_REGULAR_RECORDING_MASK;
+	u32	pressedKeys	 = eraseAll ? 0 : currKeys;
+	u32 &lastKeys     = lastButtons[which];
 
 	if (!eraseAll && Movie.state != MOVIE_STATE_NONE)
 	{
@@ -1690,7 +1695,7 @@ int VBAMovieUnfreeze(const uint8 *buf, uint32 size)
 		return MOVIE_WRONG_FORMAT;
 	}
 
-	uint32 movie_id		 = Pop32(ptr);
+	int32 movie_id		 = Pop32(ptr);
 	uint32 current_frame = Pop32(ptr);
 	uint32 end_frame	 = Pop32(ptr) + 1;     // HACK: restore the length for backward compatibility
 	uint32 space_needed	 = Movie.bytesPerFrame * end_frame;

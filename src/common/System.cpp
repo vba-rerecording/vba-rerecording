@@ -20,7 +20,7 @@ static bool	 pauseAfterFrameAdvance = false;
 static s16	 soundFilter[4000];
 static s16	 soundRight[5]  = { 0, 0, 0, 0, 0 };
 static s16	 soundLeft[5]   = { 0, 0, 0, 0, 0 };
-static int32 soundEchoIndex = 0;
+static size_t soundEchoIndex = 0;
 
 // systemABC stuff are core-related
 
