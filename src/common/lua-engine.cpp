@@ -315,41 +315,43 @@ int VBALuaSpeed(void)
 	}
 }
 
-///////////////////////////
-// vba.speedmode(string mode)
+// FIXME: Unused. Probably can be permanently send to
+// the bitbucket, but make sure
+// ///////////////////////////
+// // vba.speedmode(string mode)
+// //
+// //   Takes control of the emulation speed
+// //   of the system. Normal is normal speed (60fps, 50 for PAL),
+// //   nothrottle disables speed control but renders every frame,
+// //   turbo renders only a few frames in order to speed up emulation,
 //
-//   Takes control of the emulation speed
-//   of the system. Normal is normal speed (60fps, 50 for PAL),
-//   nothrottle disables speed control but renders every frame,
-//   turbo renders only a few frames in order to speed up emulation,
-
-//   maximum renders no frames
-static int vba_speedmode(lua_State *L)
-{
-	const char *mode = luaL_checkstring(L, 1);
-
-	if (strcasecmp(mode, "normal") == 0)
-	{
-		speedmode = SPEED_NORMAL;
-	}
-	else if (strcasecmp(mode, "nothrottle") == 0)
-	{
-		speedmode = SPEED_NOTHROTTLE;
-	}
-	else if (strcasecmp(mode, "turbo") == 0)
-	{
-		speedmode = SPEED_TURBO;
-	}
-	else if (strcasecmp(mode, "maximum") == 0)
-	{
-		speedmode = SPEED_MAXIMUM;
-	}
-	else
-		luaL_error(L, "Invalid mode %s to vba.speedmode", mode);
-
-	//printf("new speed mode:  %d\n", speedmode);
-	return 0;
-}
+// //   maximum renders no frames
+// static int vba_speedmode(lua_State *L)
+// {
+// 	const char *mode = luaL_checkstring(L, 1);
+//
+// 	if (strcasecmp(mode, "normal") == 0)
+// 	{
+// 		speedmode = SPEED_NORMAL;
+// 	}
+// 	else if (strcasecmp(mode, "nothrottle") == 0)
+// 	{
+// 		speedmode = SPEED_NOTHROTTLE;
+// 	}
+// 	else if (strcasecmp(mode, "turbo") == 0)
+// 	{
+// 		speedmode = SPEED_TURBO;
+// 	}
+// 	else if (strcasecmp(mode, "maximum") == 0)
+// 	{
+// 		speedmode = SPEED_MAXIMUM;
+// 	}
+// 	else
+// 		luaL_error(L, "Invalid mode %s to vba.speedmode", mode);
+//
+// 	//printf("new speed mode:  %d\n", speedmode);
+// 	return 0;
+// }
 
 // vba.frameadvnace()
 //
@@ -438,14 +440,6 @@ static inline bool isalphaorunderscore(char c)
 	return isalpha(c) || c == '_';
 }
 
-static std::vector<const void *> s_tableAddressStack; // prevents infinite recursion of a table within a table (when cycle is
-													  // found, print something like table:parent)
-static std::vector<const void *> s_metacallStack; // prevents infinite recursion if something's __tostring returns another table
-												  // that contains that something (when cycle is found, print the inner result
-												  // without using __tostring)
-
-static const int s_tempStrMaxLen = 64 * 1024;
-static char s_tempStr [s_tempStrMaxLen];
 
 // replacement for luaB_print() that goes to the appropriate textbox instead of stdout
 static int print(lua_State *L)
@@ -637,7 +631,7 @@ static int memory_getregister(lua_State *L)
 {
 	const char *qualifiedRegisterName = luaL_checkstring(L, 1);
 	lua_settop(L, 0);
-	for (int cpu = 0; cpu < sizeof(cpuToRegisterMaps) / sizeof(*cpuToRegisterMaps); cpu++)
+	for (size_t cpu = 0; cpu < sizeof(cpuToRegisterMaps) / sizeof(*cpuToRegisterMaps); cpu++)
 	{
 		cpuToRegisterMap ctrm = cpuToRegisterMaps[cpu];
 		int cpuNameLen		  = strlen(ctrm.cpuName);
@@ -676,7 +670,7 @@ static int memory_setregister(lua_State *L)
 	const char *  qualifiedRegisterName = luaL_checkstring(L, 1);
 	unsigned long value = (unsigned long)(luaL_checkinteger(L, 2));
 	lua_settop(L, 0);
-	for (int cpu = 0; cpu < sizeof(cpuToRegisterMaps) / sizeof(*cpuToRegisterMaps); cpu++)
+	for (size_t cpu = 0; cpu < sizeof(cpuToRegisterMaps) / sizeof(*cpuToRegisterMaps); cpu++)
 	{
 		cpuToRegisterMap ctrm = cpuToRegisterMaps[cpu];
 		int cpuNameLen		  = strlen(ctrm.cpuName);
@@ -891,7 +885,7 @@ static void CallRegisteredLuaMemHook_LuaMatch(unsigned int address, int size, un
 #endif
 			lua_settop(L, 0);
 			lua_getfield(L, LUA_REGISTRYINDEX, luaMemHookTypeStrings[hookType]);
-			for (int i = address; i != address + size; i++)
+			for (unsigned int i = address; i != address + size; i++)
 			{
 				lua_rawgeti(L, -1, i);
 				if (lua_isfunction(L, -1))
@@ -1033,6 +1027,12 @@ LuaMemHookType MatchHookTypeToCPU(lua_State *L, LuaMemHookType hookType)
 			return LUAMEMHOOK_READ_SUB;
 		case LUAMEMHOOK_EXEC:
 			return LUAMEMHOOK_EXEC_SUB;
+		default:
+			// Intentionally left blank
+			// under the assumption that hookType
+			// is the correct result (since that is
+			// what it has been returning)
+			break;
 		}
 	}
 	return hookType;
@@ -2065,76 +2065,77 @@ static void gui_drawbox_internal(int x1, int y1, int x2, int y2, uint32 colour)
 	gui_drawline_internal(x2, y1, x2, y2, true, colour);
 }
 
-// draw a circle on gui_data
-static void gui_drawcircle_internal(int x0, int y0, int radius, uint32 colour)
-{
-	//gui_prepare();
-	if (radius < 0)
-		radius = -radius;
-	if (radius == 0)
-		return;
-	if (radius == 1)
-	{
-		gui_drawpixel_internal(x0, y0, colour);
-		return;
-	}
-
-	// http://en.wikipedia.org/wiki/Midpoint_circle_algorithm
-	int f	  = 1 - radius;
-	int ddF_x = 1;
-	int ddF_y = -2 * radius;
-	int x	  = 0;
-	int y	  = radius;
-
-	if (!gui_checkbox(x0 - radius, y0 - radius, x0 + radius, y0 + radius))
-		return;
-
-	gui_drawpixel_internal(x0, y0 + radius, colour);
-	gui_drawpixel_internal(x0, y0 - radius, colour);
-	gui_drawpixel_internal(x0 + radius, y0, colour);
-	gui_drawpixel_internal(x0 - radius, y0, colour);
-
-	// same pixel shouldn't be drawed twice,
-	// because each pixel has opacity.
-	// so now the routine gets ugly.
-	while (true)
-	{
-		assert(ddF_x == 2 * x + 1);
-		assert(ddF_y == -2 * y);
-		assert(f == x * x + y * y - radius * radius + 2 * x - y + 1);
-		if (f >= 0)
-		{
-			y--;
-			ddF_y += 2;
-			f	  += ddF_y;
-		}
-
-		x++;
-		ddF_x += 2;
-		f	  += ddF_x;
-		if (x < y)
-		{
-			gui_drawpixel_internal(x0 + x, y0 + y, colour);
-			gui_drawpixel_internal(x0 - x, y0 + y, colour);
-			gui_drawpixel_internal(x0 + x, y0 - y, colour);
-			gui_drawpixel_internal(x0 - x, y0 - y, colour);
-			gui_drawpixel_internal(x0 + y, y0 + x, colour);
-			gui_drawpixel_internal(x0 - y, y0 + x, colour);
-			gui_drawpixel_internal(x0 + y, y0 - x, colour);
-			gui_drawpixel_internal(x0 - y, y0 - x, colour);
-		}
-		else if (x == y)
-		{
-			gui_drawpixel_internal(x0 + x, y0 + y, colour);
-			gui_drawpixel_internal(x0 - x, y0 + y, colour);
-			gui_drawpixel_internal(x0 + x, y0 - y, colour);
-			gui_drawpixel_internal(x0 - x, y0 - y, colour);
-			break;
-		}
-		else
-			break;
-	}
-}
+// FIXME: Unused. Check then cleanup
+// // draw a circle on gui_data
+// static void gui_drawcircle_internal(int x0, int y0, int radius, uint32 colour)
+// {
+// 	//gui_prepare();
+// 	if (radius < 0)
+// 		radius = -radius;
+// 	if (radius == 0)
+// 		return;
+// 	if (radius == 1)
+// 	{
+// 		gui_drawpixel_internal(x0, y0, colour);
+// 		return;
+// 	}
+//
+// 	// http://en.wikipedia.org/wiki/Midpoint_circle_algorithm
+// 	int f	  = 1 - radius;
+// 	int ddF_x = 1;
+// 	int ddF_y = -2 * radius;
+// 	int x	  = 0;
+// 	int y	  = radius;
+//
+// 	if (!gui_checkbox(x0 - radius, y0 - radius, x0 + radius, y0 + radius))
+// 		return;
+//
+// 	gui_drawpixel_internal(x0, y0 + radius, colour);
+// 	gui_drawpixel_internal(x0, y0 - radius, colour);
+// 	gui_drawpixel_internal(x0 + radius, y0, colour);
+// 	gui_drawpixel_internal(x0 - radius, y0, colour);
+//
+// 	// same pixel shouldn't be drawed twice,
+// 	// because each pixel has opacity.
+// 	// so now the routine gets ugly.
+// 	while (true)
+// 	{
+// 		assert(ddF_x == 2 * x + 1);
+// 		assert(ddF_y == -2 * y);
+// 		assert(f == x * x + y * y - radius * radius + 2 * x - y + 1);
+// 		if (f >= 0)
+// 		{
+// 			y--;
+// 			ddF_y += 2;
+// 			f	  += ddF_y;
+// 		}
+//
+// 		x++;
+// 		ddF_x += 2;
+// 		f	  += ddF_x;
+// 		if (x < y)
+// 		{
+// 			gui_drawpixel_internal(x0 + x, y0 + y, colour);
+// 			gui_drawpixel_internal(x0 - x, y0 + y, colour);
+// 			gui_drawpixel_internal(x0 + x, y0 - y, colour);
+// 			gui_drawpixel_internal(x0 - x, y0 - y, colour);
+// 			gui_drawpixel_internal(x0 + y, y0 + x, colour);
+// 			gui_drawpixel_internal(x0 - y, y0 + x, colour);
+// 			gui_drawpixel_internal(x0 + y, y0 - x, colour);
+// 			gui_drawpixel_internal(x0 - y, y0 - x, colour);
+// 		}
+// 		else if (x == y)
+// 		{
+// 			gui_drawpixel_internal(x0 + x, y0 + y, colour);
+// 			gui_drawpixel_internal(x0 - x, y0 + y, colour);
+// 			gui_drawpixel_internal(x0 + x, y0 - y, colour);
+// 			gui_drawpixel_internal(x0 - x, y0 - y, colour);
+// 			break;
+// 		}
+// 		else
+// 			break;
+// 	}
+// }
 
 // draw fill rect on gui_data
 static void gui_fillbox_internal(int x1, int y1, int x2, int y2, uint32 colour)
@@ -2163,85 +2164,87 @@ static void gui_fillbox_internal(int x1, int y1, int x2, int y2, uint32 colour)
 	}
 }
 
-// fill a circle on gui_data
-static void gui_fillcircle_internal(int x0, int y0, int radius, uint32 colour)
-{
-	//gui_prepare();
-	if (radius < 0)
-		radius = -radius;
-	if (radius == 0)
-		return;
-	if (radius == 1)
-	{
-		gui_drawpixel_internal(x0, y0, colour);
-		return;
-	}
+// FIXME: Unused. Check than cleanup
+// // fill a circle on gui_data
+// static void gui_fillcircle_internal(int x0, int y0, int radius, uint32 colour)
+// {
+// 	//gui_prepare();
+// 	if (radius < 0)
+// 		radius = -radius;
+// 	if (radius == 0)
+// 		return;
+// 	if (radius == 1)
+// 	{
+// 		gui_drawpixel_internal(x0, y0, colour);
+// 		return;
+// 	}
+//
+// 	// http://en.wikipedia.org/wiki/Midpoint_circle_algorithm
+// 	int f	  = 1 - radius;
+// 	int ddF_x = 1;
+// 	int ddF_y = -2 * radius;
+// 	int x	  = 0;
+// 	int y	  = radius;
+//
+// 	if (!gui_checkbox(x0 - radius, y0 - radius, x0 + radius, y0 + radius))
+// 		return;
+//
+// 	gui_drawline_internal(x0, y0 - radius, x0, y0 + radius, true, colour);
+//
+// 	while (true)
+// 	{
+// 		assert(ddF_x == 2 * x + 1);
+// 		assert(ddF_y == -2 * y);
+// 		assert(f == x * x + y * y - radius * radius + 2 * x - y + 1);
+// 		if (f >= 0)
+// 		{
+// 			y--;
+// 			ddF_y += 2;
+// 			f	  += ddF_y;
+// 		}
+//
+// 		x++;
+// 		ddF_x += 2;
+// 		f	  += ddF_x;
+//
+// 		if (x < y)
+// 		{
+// 			gui_drawline_internal(x0 + x, y0 - y, x0 + x, y0 + y, true, colour);
+// 			gui_drawline_internal(x0 - x, y0 - y, x0 - x, y0 + y, true, colour);
+// 			if (f >= 0)
+// 			{
+// 				gui_drawline_internal(x0 + y, y0 - x, x0 + y, y0 + x, true, colour);
+// 				gui_drawline_internal(x0 - y, y0 - x, x0 - y, y0 + x, true, colour);
+// 			}
+// 		}
+// 		else if (x == y)
+// 		{
+// 			gui_drawline_internal(x0 + x, y0 - y, x0 + x, y0 + y, true, colour);
+// 			gui_drawline_internal(x0 - x, y0 - y, x0 - x, y0 + y, true, colour);
+// 			break;
+// 		}
+// 		else
+// 			break;
+// 	}
+// }
 
-	// http://en.wikipedia.org/wiki/Midpoint_circle_algorithm
-	int f	  = 1 - radius;
-	int ddF_x = 1;
-	int ddF_y = -2 * radius;
-	int x	  = 0;
-	int y	  = radius;
-
-	if (!gui_checkbox(x0 - radius, y0 - radius, x0 + radius, y0 + radius))
-		return;
-
-	gui_drawline_internal(x0, y0 - radius, x0, y0 + radius, true, colour);
-
-	while (true)
-	{
-		assert(ddF_x == 2 * x + 1);
-		assert(ddF_y == -2 * y);
-		assert(f == x * x + y * y - radius * radius + 2 * x - y + 1);
-		if (f >= 0)
-		{
-			y--;
-			ddF_y += 2;
-			f	  += ddF_y;
-		}
-
-		x++;
-		ddF_x += 2;
-		f	  += ddF_x;
-
-		if (x < y)
-		{
-			gui_drawline_internal(x0 + x, y0 - y, x0 + x, y0 + y, true, colour);
-			gui_drawline_internal(x0 - x, y0 - y, x0 - x, y0 + y, true, colour);
-			if (f >= 0)
-			{
-				gui_drawline_internal(x0 + y, y0 - x, x0 + y, y0 + x, true, colour);
-				gui_drawline_internal(x0 - y, y0 - x, x0 - y, y0 + x, true, colour);
-			}
-		}
-		else if (x == y)
-		{
-			gui_drawline_internal(x0 + x, y0 - y, x0 + x, y0 + y, true, colour);
-			gui_drawline_internal(x0 - x, y0 - y, x0 - x, y0 + y, true, colour);
-			break;
-		}
-		else
-			break;
-	}
-}
-
+// FIXME: Unused. Check then cleanup
 // Helper for a simple hex parser
-static int hex2int(lua_State *L, char c)
-{
-	if (c >= '0' && c <= '9')
-		return c - '0';
-	if (c >= 'a' && c <= 'f')
-		return c - 'a' + 10;
-	if (c >= 'A' && c <= 'F')
-		return c - 'A' + 10;
-	return luaL_error(L, "invalid hex in colour");
-}
+// static int hex2int(lua_State *L, char c)
+// {
+// 	if (c >= '0' && c <= '9')
+// 		return c - '0';
+// 	if (c >= 'a' && c <= 'f')
+// 		return c - 'a' + 10;
+// 	if (c >= 'A' && c <= 'F')
+// 		return c - 'A' + 10;
+// 	return luaL_error(L, "invalid hex in colour");
+// }
 
 static const struct ColorMapping
 {
 	const char *name;
-	int			value;
+	uint32_t value;
 }
 s_colorMapping[] =
 {
@@ -2292,7 +2295,7 @@ static inline bool str2colour(uint32 *colour, lua_State *L, const char *str)
 			return true;
 		}
 
-		for (int i = 0; i < sizeof(s_colorMapping) / sizeof(*s_colorMapping); i++)
+		for (size_t i = 0; i < sizeof(s_colorMapping) / sizeof(*s_colorMapping); i++)
 		{
 			if (!stricmp(str, s_colorMapping[i].name))
 			{
@@ -2337,7 +2340,6 @@ static inline uint32 gui_getcolour_wrapped(lua_State *L, int offset, bool hasDef
 			lua_pushnil(L); // first key
 			int	 keyIndex	= lua_gettop(L);
 			int	 valueIndex = keyIndex + 1;
-			bool first		= true;
 			while (lua_next(L, offset))
 			{
 				bool keyIsString = (lua_type(L, keyIndex) == LUA_TSTRING);
@@ -2476,68 +2478,71 @@ static int gui_drawbox(lua_State *L)
 	return 0;
 }
 
-// gui.drawcircle(x0, y0, radius, colour)
-static int gui_drawcircle(lua_State *L)
-{
-	int	   x, y, r;
-	uint32 colour;
+//FIXME: Unused. Check then cleanup
+// // gui.drawcircle(x0, y0, radius, colour)
+// static int gui_drawcircle(lua_State *L)
+// {
+// 	int	   x, y, r;
+// 	uint32 colour;
+//
+// 	x	   = luaL_checkinteger(L, 1);
+// 	y	   = luaL_checkinteger(L, 2);
+// 	r	   = luaL_checkinteger(L, 3);
+// 	colour = gui_getcolour(L, 4);
+//
+// 	gui_prepare();
+//
+// 	gui_drawcircle_internal(x, y, r, colour);
+//
+// 	return 0;
+// }
 
-	x	   = luaL_checkinteger(L, 1);
-	y	   = luaL_checkinteger(L, 2);
-	r	   = luaL_checkinteger(L, 3);
-	colour = gui_getcolour(L, 4);
-
-	gui_prepare();
-
-	gui_drawcircle_internal(x, y, r, colour);
-
-	return 0;
-}
-
+//FIXME: Unused. Check then cleanup
 // gui.fillbox(x1, y1, x2, y2, colour)
-static int gui_fillbox(lua_State *L)
-{
-	int	   x1, y1, x2, y2;
-	uint32 colour;
+// static int gui_fillbox(lua_State *L)
+// {
+// 	int	   x1, y1, x2, y2;
+// 	uint32 colour;
+//
+// 	x1	   = luaL_checkinteger(L, 1);
+// 	y1	   = luaL_checkinteger(L, 2);
+// 	x2	   = luaL_checkinteger(L, 3);
+// 	y2	   = luaL_checkinteger(L, 4);
+// 	colour = gui_getcolour(L, 5);
+//
+// 	//	if (!gui_check_boundary(x1, y1))
+// 	//		luaL_error(L,"bad coordinates");
+// 	//
+// 	//	if (!gui_check_boundary(x2, y2))
+// 	//		luaL_error(L,"bad coordinates");
+// 	gui_prepare();
+//
+// 	if (!gui_checkbox(x1, y1, x2, y2))
+// 		return 0;
+//
+// 	gui_fillbox_internal(x1, y1, x2, y2, colour);
+//
+// 	return 0;
+// }
 
-	x1	   = luaL_checkinteger(L, 1);
-	y1	   = luaL_checkinteger(L, 2);
-	x2	   = luaL_checkinteger(L, 3);
-	y2	   = luaL_checkinteger(L, 4);
-	colour = gui_getcolour(L, 5);
-
-	//	if (!gui_check_boundary(x1, y1))
-	//		luaL_error(L,"bad coordinates");
-	//
-	//	if (!gui_check_boundary(x2, y2))
-	//		luaL_error(L,"bad coordinates");
-	gui_prepare();
-
-	if (!gui_checkbox(x1, y1, x2, y2))
-		return 0;
-
-	gui_fillbox_internal(x1, y1, x2, y2, colour);
-
-	return 0;
-}
-
+//FIXME: Unused. Check then cleanup
 // gui.fillcircle(x0, y0, radius, colour)
-static int gui_fillcircle(lua_State *L)
-{
-	int	   x, y, r;
-	uint32 colour;
-
-	x	   = luaL_checkinteger(L, 1);
-	y	   = luaL_checkinteger(L, 2);
-	r	   = luaL_checkinteger(L, 3);
-	colour = gui_getcolour(L, 4);
-
-	gui_prepare();
-
-	gui_fillcircle_internal(x, y, r, colour);
-
-	return 0;
-}
+// static int gui_fillcircle(lua_State *L)
+// {
+// 	int	   x, y, r;
+// 	uint32 colour;
+//
+// 	x	   = luaL_checkinteger(L, 1);
+// 	y	   = luaL_checkinteger(L, 2);
+// 	r	   = luaL_checkinteger(L, 3);
+// 	colour = gui_getcolour(L, 4);
+//
+// 	gui_prepare();
+//
+// 	gui_fillcircle_internal(x, y, r, colour);
+//
+// 	return 0;
+// }
 
 static int gui_getpixel(lua_State *L)
 {
@@ -2655,8 +2660,11 @@ static int gui_gdscreenshot(lua_State *L)
 	*ptr++ = 255;
 	*ptr++ = 255;
 
-	GetColorFunc getColor;
+	GetColorFunc getColor = NULL;
 	getColorIOFunc(systemColorDepth, &getColor, NULL);
+	if(getColor == NULL)
+		// Return false I guess...
+		return 0;
 
 	int x, y;
 	for (y = 0; y < height; y++)
@@ -2896,15 +2904,16 @@ draw_outline:
 	}
 }
 
-static int strlinelen(const char *string)
-{
-	const char *s = string;
-	while (*s && *s != '\n')
-		s++;
-	if (*s)
-		s++;
-	return s - string;
-}
+// FIXME: Unused. Check then cleanup
+// static int strlinelen(const char *string)
+// {
+// 	const char *s = string;
+// 	while (*s && *s != '\n')
+// 		s++;
+// 	if (*s)
+// 		s++;
+// 	return s - string;
+// }
 
 static void LuaDisplayString(const char *string, int y, int x, uint32 color, uint32 outlineColor)
 {
@@ -3225,7 +3234,7 @@ int gui_popup(lua_State *L)
 	// else, we don't care.
 	return 0;
 #else
-	char *t;
+	const char *t = NULL;
 #ifdef __linux
 	// The Linux backend has a "FromPause" variable.
 	// If set to 1, assume some known external event has screwed with the flow of time.
@@ -3289,7 +3298,7 @@ int gui_popup(lua_State *L)
 	{ // I'm the virgin sacrifice
 		// I'm gonna be dead in a matter of microseconds anyways, so wasted memory doesn't matter to me.
 		// Go ahead and abuse strdup.
-		char *parameters[] = { "xmessage", "-buttons", t, strdup(message), NULL };
+		char *parameters[] = {strdup("xmessage") , strdup("-buttons"), strdup(t), strdup(message), NULL };
 
 		execvp("xmessage", parameters);
 
@@ -3634,7 +3643,7 @@ static int sound_get(lua_State *L)
 	extern int32 soundLevel2;
 	extern int32 soundBalance;
 	extern int32 soundMasterOn;
-	extern int32 soundVIN;
+	// extern int32 soundVIN;
 	extern int32 sound1On;
 	extern int32 sound1EnvelopeVolume;
 	extern int32 sound2On;
@@ -3655,27 +3664,27 @@ static int sound_get(lua_State *L)
 	double panpot;
 	bool gba = systemIsRunningGBA();
 	u8* gbMem = gba ? ioMem : gbMemory;
-	const int rNR10 = gba ? 0x60 : 0xff10;
+	// const int rNR10 = gba ? 0x60 : 0xff10;
 	const int rNR11 = gba ? 0x62 : 0xff11;
-	const int rNR12 = gba ? 0x63 : 0xff12;
+	// const int rNR12 = gba ? 0x63 : 0xff12;
 	const int rNR13 = gba ? 0x64 : 0xff13;
 	const int rNR14 = gba ? 0x65 : 0xff14;
 	const int rNR21 = gba ? 0x68 : 0xff16;
-	const int rNR22 = gba ? 0x69 : 0xff17;
+	// const int rNR22 = gba ? 0x69 : 0xff17;
 	const int rNR23 = gba ? 0x6c : 0xff18;
 	const int rNR24 = gba ? 0x6d : 0xff19;
-	const int rNR30 = gba ? 0x70 : 0xff1a;
-	const int rNR31 = gba ? 0x72 : 0xff1b;
-	const int rNR32 = gba ? 0x73 : 0xff1c;
+	// const int rNR30 = gba ? 0x70 : 0xff1a;
+	// const int rNR31 = gba ? 0x72 : 0xff1b;
+	// const int rNR32 = gba ? 0x73 : 0xff1c;
 	const int rNR33 = gba ? 0x74 : 0xff1d;
 	const int rNR34 = gba ? 0x75 : 0xff1e;
-	const int rNR41 = gba ? 0x78 : 0xff20;
-	const int rNR42 = gba ? 0x79 : 0xff21;
+	// const int rNR41 = gba ? 0x78 : 0xff20;
+	// const int rNR42 = gba ? 0x79 : 0xff21;
 	const int rNR43 = gba ? 0x7c : 0xff22;
-	const int rNR44 = gba ? 0x7d : 0xff23;
-	const int rNR50 = gba ? 0x80 : 0xff24;
-	const int rNR51 = gba ? 0x81 : 0xff25;
-	const int rNR52 = gba ? 0x84 : 0xff26;
+	// const int rNR44 = gba ? 0x7d : 0xff23;
+	// const int rNR50 = gba ? 0x80 : 0xff24;
+	// const int rNR51 = gba ? 0x81 : 0xff25;
+	// const int rNR52 = gba ? 0x84 : 0xff26;
 	const int rWAVE_RAM = gba ? 0x90 : 0xff30;
 
 	const int32 _soundVIN = 0x88; // gba ? 0x88 : soundVIN;
@@ -4752,9 +4761,12 @@ void VBALuaGui(uint8 *screen, int ppl, int width, int height)
 	if (height > LUA_SCREEN_HEIGHT)
 		height = LUA_SCREEN_HEIGHT;
 
-	GetColorFunc getColor;
-	SetColorFunc setColor;
+	GetColorFunc getColor = NULL;
+	SetColorFunc setColor = NULL;
 	getColorIOFunc(systemColorDepth, &getColor, &setColor);
+	if(getColor == NULL || setColor == NULL)
+		// FIXME: Do some sensible error reporting/handling
+		return;
 
 	for (int y = 0; y < height; y++)
 	{
