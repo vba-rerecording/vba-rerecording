@@ -44,7 +44,7 @@ struct mapperMBC3
 	int32 mapperLHours;
 	int32 mapperLDays;
 	int32 mapperLControl;
-	time_t	  mapperLastTime;
+	time_t mapperLastTime;
 	// I'm just gonna leave this right here in case time_t is not quite
 	// large enough to fill 8 bytes on its own
 	int32 overflow;
@@ -134,7 +134,7 @@ struct mapperTAMA5
 	int32 mapperLMonths;
 	int32 mapperLYears;
 	int32 mapperLControl;
-	u32	  mapperLastTime;
+	time_t	  mapperLastTime;
 };
 
 struct mapperMMM01

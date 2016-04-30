@@ -2029,9 +2029,9 @@ bool gbReadSaveMBC3(const char * name)
 	}
 	else if ((gbRom[0x147] == 0xf) || (gbRom[0x147] == 0x10)) {
 		// We expect at least 4 bytes of a unix time stamp
-		size_t minimalRTCSize = sizeof(int32) * 10 + 4;
+		int minimalRTCSize = sizeof(int32) * 10 + 4;
 		// But optimally we want 8 bytes
-		size_t optimalRTCSize =  sizeof(int32) * 10 + 8;
+		int optimalRTCSize =  sizeof(int32) * 10 + 8;
 		// So we read the optimalRTCsize accepting
 		// only finding the minimalRTCSize
 		read = gzread(gzFile,
