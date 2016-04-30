@@ -1,6 +1,7 @@
 
 ---vba-rerecording v24.4alpha1--
 
+2016-04-30 bed59bc Sniperrifle2004 - Update the changelog
 2016-04-29 f93dadc Sniperrifle2004 - Update cmake file to also install the config
 2016-04-29 1335a5d Sniperrifle2004 - Improve documentation on throttle to valid hex
 2016-04-29 60ec1b9 Sniperrifle2004 - Default to 100% throttle

@@ -2897,6 +2897,8 @@ void systemRenderFrame()
     u32 *stretcher = (u32 *)sdlStretcher;
     if(systemColorDepth == 16)
       src += srcPitch;
+    if(systemColorDepth == 32)
+      src += 4 * (srcWidth + 1);
     int option = sizeOption;
     if(yuv)
       option = 0;
