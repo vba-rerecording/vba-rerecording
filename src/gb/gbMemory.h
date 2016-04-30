@@ -45,6 +45,9 @@ struct mapperMBC3
 	int32 mapperLDays;
 	int32 mapperLControl;
 	time_t	  mapperLastTime;
+	// I'm just gonna leave this right here in case time_t is not quite
+	// large enough to fill 8 bytes on its own
+	int32 overflow;
 };
 
 struct mapperMBC5

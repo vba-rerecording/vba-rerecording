@@ -347,7 +347,8 @@ mapperMBC3 gbDataMBC3 = {
 	0, // timer latched hours
 	0, // timer latched days
 	0, // timer latched control
-	time_t(-1) // last time
+	time_t(-1), // last time
+	0 // Overflow zero
 };
 
 void memoryUpdateMBC3Clock()
@@ -1846,4 +1847,3 @@ void memoryUpdateMapGS3()
 	gbMemoryMap[0x04] = &gbRom[tmpAddress];
 	gbMemoryMap[0x05] = &gbRom[tmpAddress + 0x1000];
 }
-

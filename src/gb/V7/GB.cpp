@@ -1911,7 +1911,8 @@ void gbWriteSaveMBC3(const char *name, bool extendedSave)
 	{
 		fwrite(&gbDataMBC3.mapperSeconds,
 		       1,
-		       10 * sizeof(int32) + sizeof(time_t),
+					 // always write 8 bytes as RTC
+		       10 * sizeof(int32) + 8,
 		       gzFile);
 	}
 
@@ -2027,29 +2028,41 @@ bool gbReadSaveMBC3(const char * name)
 		res = false;
 	}
 	else if ((gbRom[0x147] == 0xf) || (gbRom[0x147] == 0x10)) {
+		// We expect at least 4 bytes of a unix time stamp
+		size_t minimalRTCSize = sizeof(int32) * 10 + 4;
+		// But optimally we want 8 bytes
+		size_t optimalRTCSize =  sizeof(int32) * 10 + 8;
+		// So we read the optimalRTCsize accepting
+		// only finding the minimalRTCSize
 		read = gzread(gzFile,
 			&gbDataMBC3.mapperSeconds,
-			sizeof(int32) * 10 + sizeof(time_t));
-		if (read != (sizeof(int32) * 10 + sizeof(time_t)) && read != 0) {
-			systemMessage(MSG_FAILED_TO_READ_RTC, N_("Failed to read RTC from save game %s (continuing)"),
-				name);
-			res = false;
-		}
-		else if (read == 0)
-		{
+			optimalRTCSize);
+		if (read != minimalRTCSize && read != optimalRTCSize) {
+			// If we were unable to read a valid sized RTC struct, warn, but continue.
 			systemMessage(MSG_FAILED_TO_READ_RTC, N_("Failed to read RTC from save game %s (continuing)"),
 				name);
 			res = false;
 		}
 		else
 		{
-			// Also checks if the battery file is bigger than gbRamSizeMask+1+RTC !
+			// Check that the overflow is zero
+			if(gbDataMBC3.overflow != 0) {
+				// Oh boy. It must be y2038 or WORSE. Crash (softly) and restore order
+				// to the data struct.
+				// FIXME: This actually is much worse than the message currently suggests.
+				// let's hope the backup strategy for the RTC still works
+				systemMessage(MSG_FAILED_TO_READ_RTC, N_("Failed to read RTC from save game %s (continuing)"),
+				 	name);
+				gbDataMBC3.overflow = 0;
+				res = false;
+			}
+			// Also checks if the battery file is bigger than gbRamSizeMask+1+optimalRTCSize!
 			u8 data[1];
 			data[0] = 0;
 			read = gzread(gzFile,
 				data,
 				1);
-			if (data[0] > 0) {
+			if (read > 0) {
 				systemMessage(MSG_FAILED_TO_READ_SGM,
 					N_("Battery file's size incompatible with the rom settings %s (%d).\nWarning : save of the battery file is now disabled !"), name, read);
 				gbBatteryError = true;
@@ -2060,45 +2073,6 @@ bool gbReadSaveMBC3(const char * name)
 	gzclose(gzFile);
 	return res;
 }
-
-/*bool gbReadSaveMBC3(const char *name)
-{
-	gzFile gzFile = gzopen(name, "rb");
-
-	if (gzFile == NULL)
-	{
-		return false;
-	}
-
-	int read = gzread(gzFile,
-	                  gbRam,
-	                  gbRamSize);
-
-	bool res = true;
-
-	if (read != gbRamSize)
-	{
-		systemMessage(MSG_FAILED_TO_READ_SGM,
-		              N_("Failed to read complete save game %s (%d)"), name, read);
-	}
-	else
-	{
-		read = gzread(gzFile,
-		              &gbDataMBC3.mapperSeconds,
-		              sizeof(int32) * 10 + sizeof(u32));
-
-		if (read != (sizeof(int32) * 10 + sizeof(u32)) && read != 0)
-		{
-			systemMessage(MSG_FAILED_TO_READ_RTC,
-			              N_("Failed to read RTC from save game %s (continuing)"),
-			              name);
-			res = false;
-		}
-	}
-
-	gzclose(gzFile);
-	return res;
-}*/
 
 bool gbReadSaveMBC5(const char *name)
 {
@@ -2191,8 +2165,12 @@ bool gbWriteBatteryFile(const char *file, bool extendedSave)
 			break;
 		case 0x0f:
 		case 0x10:
+			gbWriteSaveMBC3(file, extendedSave);
+			break;
 		case 0x13:
-			gbWriteSaveMBC3(file, true);
+		// So pocket camera...Are you secretly MBC3?
+		case 0xfc:
+			gbWriteSaveMBC3(file, false);
 			break;
 		case 0x1b:
 		case 0x1e:
@@ -2264,7 +2242,9 @@ bool gbReadBatteryFile(const char *file)
 			break;
 		case 0x0f:
 		case 0x10:
-		case 0x13:
+			// For those MBC3's with a timer
+			// that fail to load it, initialize
+			// it through local time.
 			if (!gbReadSaveMBC3(file))
 			{
 				struct tm *lt;
@@ -2291,10 +2271,11 @@ bool gbReadBatteryFile(const char *file)
 				res = false;
 				break;
 			}
-			time_t tmp;
-			tmp = gbDataMBC3.mapperLastTime;
-			systemScreenMessage(ctime(&tmp), 4);
 			res = true;
+			break;
+		case 0x13:
+		case 0xfc:
+			res = gbReadSaveMBC3(file);
 			break;
 		case 0x1b:
 		case 0x1e:
