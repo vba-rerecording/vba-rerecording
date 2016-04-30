@@ -105,14 +105,14 @@ static inline u8 gbReadROMQuick8(u32 addr)
 
 static inline u8 gbReadROMQuick16(u32 addr)
 {
-	return (gbReadROMQuick(addr+1 & gbRomSizeMask) << 8) | gbReadROMQuick(addr & gbRomSizeMask);
+	return (gbReadROMQuick((addr+1) & gbRomSizeMask) << 8) | gbReadROMQuick(addr & gbRomSizeMask);
 }
 
 static inline u8 gbReadROMQuick32(u32 addr)
 {
-	return (gbReadROMQuick(addr+3 & gbRomSizeMask) << 24) |
-		(gbReadROMQuick(addr+2 & gbRomSizeMask) << 16) |
-		(gbReadROMQuick(addr+1 & gbRomSizeMask) << 8) |
+	return (gbReadROMQuick((addr+3) & gbRomSizeMask) << 24) |
+		(gbReadROMQuick((addr+2) & gbRomSizeMask) << 16) |
+		(gbReadROMQuick((addr+1) & gbRomSizeMask) << 8) |
 		gbReadROMQuick(addr & gbRomSizeMask);
 }
 
