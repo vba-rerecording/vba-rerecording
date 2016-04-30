@@ -90,7 +90,7 @@ static inline void gbWriteMemoryQuick32(u16 addr, u32 b)
 	gbWriteMemoryQuick(addr, b & 0xff);
 	gbWriteMemoryQuick(addr + 1, (b >> 8) & 0xff);
 	gbWriteMemoryQuick(addr + 2, (b >> 16) & 0xff);
-	gbWriteMemoryQuick(addr + 1, (b >> 24) & 0xff);
+	gbWriteMemoryQuick(addr + 3, (b >> 24) & 0xff);
 }
 
 static inline u8 gbReadROMQuick(u32 address)
