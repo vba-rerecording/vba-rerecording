@@ -20,7 +20,7 @@ Include(CPack)
 
 # This is the version needed for nativednasm support
 # and proper detection of lua include dir
-cmake_minimum_required( VERSION 3.3.2 )
+cmake_minimum_required( VERSION 2.8.4 )
 # This only has to be enabled with mmx support
 # enable_language(ASM_NASM)
 
