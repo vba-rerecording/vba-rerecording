@@ -1,6 +1,9 @@
 
----vba-rerecording v24.4alpha1--
+---vba-rerecording 24.4.0--
 
+2016-05-01 116a7a2 Sniperrifle2004 - Fix accidental cmake version restriction
+2016-05-01 079198e Sniperrifle2004 - Change versioning policy
+2016-05-01 808421b Sniperrifle2004 - Pass filename to fprintf as c_str
 2016-04-30 558bd2f Sniperrifle2004 - Squash SOME warnings in the GB cores
 2016-04-30 592c6da Sniperrifle2004 - Squashed warnings in movie.cpp
 2016-04-30 6003bd2 Sniperrifle2004 - Squash warnings in lua-engine.cpp
