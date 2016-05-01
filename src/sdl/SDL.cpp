@@ -2764,7 +2764,7 @@ int main(int argc, char **argv)
       // Now we can properly load the lua script
       if(!VBALoadLuaCode(luaScriptFile.c_str())){
         // FIXME: While this is accurate it is not exactly helpful.
-        fprintf(stderr, "Failed to load and run lua script %s", luaScriptFile);
+        fprintf(stderr, "Failed to load and run lua script %s", luaScriptFile.c_str());
       };
       loadLUAScript = false;
       // Continue
