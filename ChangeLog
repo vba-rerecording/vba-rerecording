@@ -1,6 +1,13 @@
 
 ---vba-rerecording v24.4alpha1--
 
+2016-04-30 558bd2f Sniperrifle2004 - Squash SOME warnings in the GB cores
+2016-04-30 592c6da Sniperrifle2004 - Squashed warnings in movie.cpp
+2016-04-30 6003bd2 Sniperrifle2004 - Squash warnings in lua-engine.cpp
+2016-04-30 7adafaf Sniperrifle2004 - Squash warnings in gbGlobals.h
+2016-04-30 bc9e905 Sniperrifle2004 - Fix a huge potential bug
+2016-04-30 124ff49 Sniperrifle2004 - Fix the black line showing on the screen
+2016-04-30 4d3b410 Sniperrifle2004 - Implement bgb's suggestion for handling RTC saves
 2016-04-30 bed59bc Sniperrifle2004 - Update the changelog
 2016-04-29 f93dadc Sniperrifle2004 - Update cmake file to also install the config
 2016-04-29 1335a5d Sniperrifle2004 - Improve documentation on throttle to valid hex
