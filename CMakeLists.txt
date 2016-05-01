@@ -1,5 +1,12 @@
 # CMake build file. Based on the file used by vba-m
-PROJECT(VBA-ReRecording C CXX)
+PROJECT(vba-rerecording C CXX)
+# FIXME: This duplicates information in version.h
+SET(PROJECT_VERSION 24.4.0)
+SET(CPACK_PACKAGE_VERSION 24.4.0)
+SET(CPACK_PACKAGE_CONTACT "Sniperrifle2004 <sniperrifle2004+vba-rr@gmail.com>")
+# We want the comfort of cpack
+Include(CPack)
+
 # No need to check for ASM until MMX support
 # PROJECT(VBA-ReRecording ASM C CXX)
 
@@ -12,7 +19,8 @@ PROJECT(VBA-ReRecording C CXX)
 # TODO: Win32 mingw/cygwin based support
 
 # This is the version needed for nativednasm support
-cmake_minimum_required( VERSION 2.8.4 )
+# and proper detection of lua include dir
+cmake_minimum_required( VERSION 3.3.2 )
 # This only has to be enabled with mmx support
 # enable_language(ASM_NASM)
 
@@ -301,7 +309,7 @@ IF( CAN_BUILD_VBARR )
     )
 
     INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/vba-rr DESTINATION bin)
-    INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/vba-rr.cfg DESTINATION ${CMAKE_INSTALL_PREFIX}/${SYSCONFDIR})
+    INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/vba-rr.cfg DESTINATION ${SYSCONFDIR})
 ENDIF( CAN_BUILD_VBARR )
 
 IF( CAN_BUILD_GVBARR )

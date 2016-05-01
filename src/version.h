@@ -36,20 +36,8 @@
 #ifndef VBA_RR_MAJOR_VERSION_NO
 #	define VBA_RR_MAJOR_VERSION_NO 24
 #	define VBA_RR_MINOR_VERSION_NO 4
-// If necessary define an alpha, beta or rc version here
-# define VBA_RR_ALPHA_VERSION 1
+#	define VBA_RR_PATCH_VERSION_NO 0
 #endif
-
-# ifdef VBA_RR_ALPHA_VERSION
-#	 define VBA_RELEASE_TYPE "alpha" STRINGIZE_VALUE(VBA_RR_ALPHA_VERSION)
-# elif defined(VBA_RR_BETA_VERSION)
-#	 define VBA_RELEASE_TYPE "beta" STRINGIZE_VALUE(VBA_RR_BETA_VERSION)
-# elif defined(VBA_RR_RC_VERSION)
-#	 define VBA_RELEASE_TYPE "rc" STRINGIZE_VALUE(VBA_RR_RC_VERSION)
-# else
-// We made it to a final release! Hype!
-#  define VBA_RELEASE_TYPE ""
-# endif
 
 // A git commit MAY be set for versioning and will be displayed
 // if the version is not build from a tag or if the build
@@ -72,18 +60,23 @@
 # endif
 #	define VBA_BUILDTYPE_STRING VBA_RELEASE_TYPE " Debug"
 #elif defined(PUBLIC_RELEASE)
-# define VBA_SUBVERSION_STRING VBA_RELEASE_TYPE
+# define VBA_SUBVERSION_STRING
 #	define VBA_BUILDTYPE_STRING  "Release"
 #else // interim
 #ifdef GIT_COMMIT
-#	define VBA_SUBVERSION_STRING VBA_RELEASE_TYPE " git@" GIT_COMMIT
+#	define VBA_SUBVERSION_STRING " git@" GIT_COMMIT
 #else
-#	define VBA_SUBVERSION_STRING VBA_RELEASE_TYPE " git"
+#	define VBA_SUBVERSION_STRING " git"
 #endif
 #	define VBA_BUILDTYPE_STRING "Interim"
 #endif
 
-#if VBA_RR_MINOR_VERSION_NO > 0
+#if VBA_RR_PATCH_VERSION_NO > 0
+#	define VBA_RR_VERSION_NO VBA_RR_MAJOR_VERSION_NO ## . ## VBA_RR_MINOR_VERSION_NO \
+	## . ## VBA_RR_PATCH_VERSION_NO
+# define VBA_RR_VERSION_AS_STRING STRINGIZE_VALUE(VBA_RR_MAJOR_VERSION_NO) \
+	"." STRINGIZE_VALUE(VBA_RR_MINOR_VERSION_NO) "." STRINGIZE_VALUE(VBA_RR_PATCH_VERSION_NO)
+#elif VBA_RR_MINOR_VERSION_NO > 0
 #	define VBA_RR_VERSION_NO VBA_RR_MAJOR_VERSION_NO ## . ## VBA_RR_MINOR_VERSION_NO
 # define VBA_RR_VERSION_AS_STRING STRINGIZE_VALUE(VBA_RR_MAJOR_VERSION_NO) "." STRINGIZE_VALUE(VBA_RR_MINOR_VERSION_NO)
 #else
