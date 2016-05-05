@@ -237,8 +237,11 @@ int  mouseCounter = 0;
 int autoFire = 0;
 bool autoFireToggle = false;
 
+const int MESSAGE_OFFSET = 2;
+const size_t MAX_MESSAGE_LENGTH = 21;
+
 bool screenMessage[8] = {false,false,false,false,false,false,false,false};
-char screenMessageBuffer[8][21];
+char screenMessageBuffer[8][MAX_MESSAGE_LENGTH + 1];
 u32  screenMessageTime[8] = {0,0,0,0,0,0,0,0};
 u32  screenMessageDuration[8] = {0,0,0,0,0,0,0,0};
 
@@ -2860,7 +2863,7 @@ void systemRenderFrame()
 		}
 		if(((systemGetClock() - screenMessageTime[slot]) < screenMessageDuration[slot]) &&
 			!disableStatusMessages) {
-			drawText(pix, srcPitch, 10, srcHeight - 20*(slot+1),
+			drawText(pix, srcPitch, MESSAGE_OFFSET, srcHeight - 20*(slot+1),
 					screenMessageBuffer[slot]);
 		} else {
 			screenMessage[slot] = false;
@@ -2957,13 +2960,13 @@ void systemRenderFrame()
     if(showSpeedTransparent)
       drawTextTransp((u8*)surface->pixels,
                      surface->pitch,
-                     10,
+                     MESSAGE_OFFSET,
                      surface->h-20,
                      buffer);
     else
       drawText((u8*)surface->pixels,
                surface->pitch,
-               10,
+               MESSAGE_OFFSET,
                surface->h-20,
                buffer);
   }
@@ -3241,9 +3244,9 @@ void systemScreenMessage(const char *msg, int slot, int duration, const char *co
   screenMessage[slot] = true;
   screenMessageTime[slot] = systemGetClock();
   screenMessageDuration[slot] = duration;
-  if(strlen(msg) > 20) {
-    strncpy(screenMessageBuffer[slot], msg, 20);
-    screenMessageBuffer[slot][20] = 0;
+  if(strlen(msg) > MAX_MESSAGE_LENGTH) {
+    strncpy(screenMessageBuffer[slot], msg, MAX_MESSAGE_LENGTH);
+    screenMessageBuffer[slot][MAX_MESSAGE_LENGTH] = 0;
   } else
     strcpy(screenMessageBuffer[slot], msg);
 }
